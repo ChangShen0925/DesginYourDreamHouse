@@ -1,0 +1,10 @@
+diffusers
+qrcode
+moviepy
+gradio==3.36.1
+fsspec==2023.9.1
+openai
+transformers
+accelerate
+opencv-python
+scipy
