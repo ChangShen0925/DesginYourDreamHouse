@@ -1,5 +1,5 @@
 ---
 sdk: gradio
-sdk_version: 3.36.1
+sdk_version: 3.44.3
 app_file: Demo.py
 ---

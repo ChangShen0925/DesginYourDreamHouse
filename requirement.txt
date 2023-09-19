@@ -1,7 +1,7 @@
 diffusers
 qrcode
 moviepy
-gradio==3.36.1
+gradio==3.44.3
 fsspec==2023.9.1
 openai
 transformers
