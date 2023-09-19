@@ -268,8 +268,8 @@ with gr.Blocks() as demo:
             with gr.Row():
                 QR_btn = gr.Button(value = 'Generate Your QR code!')
             
-            QR_img  = gr.Image()
-            QR_link = gr.Textbox(show_copy_button = True)
+            QR_img  = gr.Image(height = 256, width = 1280, container = False)
+            QR_link = gr.Textbox(label = 'Copy your link', show_copy_button = True)
             QR_btn.click(generateQRcode, inputs = [cb_audio, cb_effect], outputs = [QR_img, QR_link])
 
 
