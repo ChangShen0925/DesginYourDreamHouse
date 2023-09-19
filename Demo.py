@@ -5,8 +5,6 @@ import torch
 import qrcode
 import cv2
 import numpy as np
-from OutsideDesign import image2videoOutside
-from InsideDesign import InsideDesign
 from moviepy.editor import VideoFileClip
 import gradio as gr
 
@@ -32,6 +30,12 @@ os.makedirs(os.getcwd(), exist_ok=True)
 
 def clear():
     return None
+
+def shareToSocialMedia(media, video_path):
+    url = ''
+    if media == 'Facebook':
+        url+=f"https://www.facebook.com/sharer/sharer.php?u={video_path}"
+    return gr.Button.update(link = url)
 
 def generateQRcode(audio, effect, request: gr.Request):
     url = str(request.headers['origin']) + '/file=' + os.getcwd()
@@ -269,9 +273,13 @@ with gr.Blocks() as demo:
                 QR_btn = gr.Button(value = 'Generate Your QR code!')
             
             QR_img  = gr.Image(height = 256, width = 1280, container = False)
-            QR_link = gr.Textbox(label = 'Copy your link', show_copy_button = True)
-            QR_btn.click(generateQRcode, inputs = [cb_audio, cb_effect], outputs = [QR_img, QR_link])
+            with gr.Row():
+                QR_link   = gr.Textbox(label = 'Copy your link', show_copy_button = True, scale = 10)
+                QR_share  = gr.Dropdown([ "Facebook"], multiselect=False, label="Share", scale = 1)
+                share_btn = gr.Button(value = 'share', scale = 1, link = "https://translate.google.com/")
 
+            QR_btn.click(generateQRcode, inputs = [cb_audio, cb_effect], outputs = [QR_img, QR_link])
+            QR_share.change(shareToSocialMedia, inputs = [QR_share, QR_link], outputs = [share_btn])
 
     
 if __name__ == "__main__":
