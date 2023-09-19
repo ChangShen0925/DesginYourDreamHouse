@@ -51,7 +51,7 @@ def generateQRcode(audio, effect, request: gr.Request):
     qr.make(fit=True)
     qr_code = qr.make_image(fill_color="black", back_color="white")
     qr_code.save('qrcode.png')
-    return Image.open('qrcode.png')
+    return Image.open('qrcode.png'), url
 
 
 def viewAllimages():
@@ -267,8 +267,10 @@ with gr.Blocks() as demo:
         with gr.TabItem("QR Code"):
             with gr.Row():
                 QR_btn = gr.Button(value = 'Generate Your QR code!')
-                QE_img = gr.Image()
-            QR_btn.click(generateQRcode, inputs = [cb_audio, cb_effect], outputs = [QE_img])
+            
+            QR_img  = gr.Image()
+            QR_link = gr.Textbox(show_copy_button = True)
+            QR_btn.click(generateQRcode, inputs = [cb_audio, cb_effect], outputs = [QR_img, QR_link])
 
 
     
