@@ -75,7 +75,7 @@ def generateQRcode(audio, effect, filename, request: gr.Request):
 def viewAllimages(filename):
     output = [Image.open(f'{filename}/House.png'), None, None, None, None, None, None, None, None,]
     for i in os.listdir(filename):
-        if '.png' in i and 'House' not in i:
+        if ('.png' in i and 'House' not in i) and 'qrcode.png' != i:
             for j in range(len(output)):
                 if output[j] is None:
                     output[j] = Image.open(f'{filename}/{i}')
@@ -85,18 +85,18 @@ def viewAllimages(filename):
 
 def generateVideo(cb1, cb2, cb3, cb4, cb5, cb6, cb7, cb8, cb9, audio, effect, filename):
     if audio and effect:
-        AddImageEffects([cb1, cb2, cb3, cb4, cb5, cb6, cb7, cb8, cb9], [viewAllimages(filename)], fileName)
-        audio2video(VideoFileClip('output_with_effects.mp4'), fileName)
+        AddImageEffects([cb1, cb2, cb3, cb4, cb5, cb6, cb7, cb8, cb9], viewAllimages(filename), filename)
+        audio2video(VideoFileClip(f"{filename}/output_with_effects.mp4"), filename)
         return os.getcwd() + f"/{filename}/output_with_audio.mp4"
     elif audio:
-        JustImage([cb1, cb2, cb3, cb4, cb5, cb6, cb7, cb8, cb9], [viewAllimages(filename)], fileName)
-        audio2video(VideoFileClip('output.mp4'), fileName)
+        JustImage([cb1, cb2, cb3, cb4, cb5, cb6, cb7, cb8, cb9], viewAllimages(filename), filename)
+        audio2video(VideoFileClip(f"{filename}/output.mp4"), filename)
         return os.getcwd() + f"/{filename}/output_with_audio.mp4"
     elif effect:
-        AddImageEffects([cb1, cb2, cb3, cb4, cb5, cb6, cb7, cb8, cb9], [viewAllimages(filename)], fileName)
+        AddImageEffects([cb1, cb2, cb3, cb4, cb5, cb6, cb7, cb8, cb9], viewAllimages(filename), filename)
         return os.getcwd() + f"/{filename}/output_with_effects.mp4"
     else:
-        JustImage([cb1, cb2, cb3, cb4, cb5, cb6, cb7, cb8, cb9], [viewAllimages(filename)], fileName)
+        JustImage([cb1, cb2, cb3, cb4, cb5, cb6, cb7, cb8, cb9], viewAllimages(filename), filename)
         return os.getcwd() + f"/{filename}/output.mp4"
     
 
@@ -263,9 +263,9 @@ with gr.Blocks() as demo:
         with gr.TabItem("Design your background music and image effects"):
             btn_view_images = gr.Button(value="View all designs!")
             with gr.Row():
-                cb_house   = gr.Checkbox(value = 'True', label = None)
-                cb_dinning = gr.Checkbox(value = 'True', label = None)
-                cb_kitchen = gr.Checkbox(value = 'True', label = None)
+                cb_house   = gr.Checkbox(value = 'True')
+                cb_dinning = gr.Checkbox(value = 'True')
+                cb_kitchen = gr.Checkbox(value = 'True')
             
             with gr.Row():
                 img_house   = gr.Image()
@@ -273,9 +273,9 @@ with gr.Blocks() as demo:
                 img_kitchen = gr.Image()
             
             with gr.Row():
-                cb_living   = gr.Checkbox(value = 'True', label = None)
-                cb_bath     = gr.Checkbox(value = 'True', label = None)
-                cb_bedroom1 = gr.Checkbox(value = 'True', label = None)
+                cb_living   = gr.Checkbox(value = 'True')
+                cb_bath     = gr.Checkbox(value = 'True')
+                cb_bedroom1 = gr.Checkbox(value = 'True')
             
             with gr.Row():
                 img_living   = gr.Image()
@@ -283,9 +283,9 @@ with gr.Blocks() as demo:
                 img_bedroom1 = gr.Image()
 
             with gr.Row():
-                cb_bedroom2 = gr.Checkbox(value = 'True', label = None)
-                cb_bedroom3 = gr.Checkbox(value = 'True', label = None)
-                cb_bedroom4 = gr.Checkbox(value = 'True', label = None)
+                cb_bedroom2 = gr.Checkbox(value = 'True')
+                cb_bedroom3 = gr.Checkbox(value = 'True')
+                cb_bedroom4 = gr.Checkbox(value = 'True')
             
             with gr.Row():
                 img_bedroom2 = gr.Image()

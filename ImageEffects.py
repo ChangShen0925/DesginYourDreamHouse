@@ -153,7 +153,8 @@ def zoomIn(frame, i, big):
         scale_factor = 1.0 + (i / 100)
     else:
         scale_factor = 2.0 -  (i / 100)
-    zoomed_img = frame.resize((int(width * scale_factor), int(height * scale_factor)), Image.ANTIALIAS)
+    zoomed_img = frame.resize((int(width * scale_factor), int(height * scale_factor)), Image.LANCZOS)
+    
     
     left = (zoomed_img.width - width) / 2
     top = (zoomed_img.height - height) / 2
