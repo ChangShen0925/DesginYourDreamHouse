@@ -12,17 +12,17 @@ import numpy as np
 
 effect_list = [AppearByPixels, X_Ray, swap_waterfall, zoom_swap, bur_bright_swap, open_door_swap, os.getcwd() + "/VideoEffects/snowVideo.mp4", os.getcwd() + "/VideoEffects/smokeVideo.mp4", os.getcwd() + "/VideoEffects/cloudVideo.mp4"]
 
-def text2audio(prompt):
+def text2audio(prompt, filename):
     repo_id = "cvssp/audioldm2"
     pipe = AudioLDM2Pipeline.from_pretrained(repo_id, torch_dtype=torch.float32)
     pipe = pipe.to("cuda")
 
     audio = pipe(prompt, num_inference_steps=20, audio_length_in_s=30.0).audios[0]
 
-    scipy.io.wavfile.write("techno.wav", rate=16000, data=audio)
+    scipy.io.wavfile.write(f"{filename}/techno.wav", rate=16000, data=audio)
 
 
-def JustImage(select_list, image_list):
+def JustImage(select_list, image_list, filename):
     selected_images = []
     for i in range(len(select_list)):
         if select_list[i] and image_list[i] is not None:
@@ -37,7 +37,7 @@ def JustImage(select_list, image_list):
         combined_image.paste(selected_images[i], (i * width, 0))
     
     fourcc = cv2.VideoWriter_fourcc(*'mp4v') 
-    video = cv2.VideoWriter('output.mp4', fourcc, 100.0, (width, height))
+    video = cv2.VideoWriter(f'{filename}/output.mp4', fourcc, 100.0, (width, height))
 
     upper = width * (len(selected_images) - 1)
     combined_image = cv2.cvtColor(np.array(combined_image), cv2.COLOR_RGB2BGR)
@@ -49,7 +49,7 @@ def JustImage(select_list, image_list):
     
     video.release()
 
-def AddImageEffects(select_list, image_list):
+def AddImageEffects(select_list, image_list, filename):
     selected_images = []
     for i in range(len(select_list)):
         if select_list[i] and image_list[i] is not None:
@@ -59,7 +59,7 @@ def AddImageEffects(select_list, image_list):
 
     
     fourcc = cv2.VideoWriter_fourcc(*'mp4v') 
-    video = cv2.VideoWriter('output_with_effects.mp4', fourcc, 100.0, (width, height))
+    video = cv2.VideoWriter(f'{filename}/output_with_effects.mp4', fourcc, 100.0, (width, height))
 
     random_elements = random.sample(effect_list, len(selected_images))
     for _ in range(100):
@@ -76,9 +76,9 @@ def AddImageEffects(select_list, image_list):
 
 
 
-def audio2video(video):
+def audio2video(video, filename):
 
-    audio = AudioFileClip("techno.wav")
+    audio = AudioFileClip(f"{filename}/techno.wav")
 
     num_audio_repeats = int(video.duration / audio.duration) + 1
 
@@ -91,7 +91,7 @@ def audio2video(video):
 
     video = video.set_audio(final_audio)
 
-    video.write_videofile("output_with_audio.mp4", codec="libx264", audio_codec="aac")
+    video.write_videofile(f"{filename}/output_with_audio.mp4", codec="libx264", audio_codec="aac")
 
     video.close()
     audio.close()
