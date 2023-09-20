@@ -7,6 +7,7 @@ import cv2
 import numpy as np
 import webbrowser
 from moviepy.editor import VideoFileClip
+from IPython.display import HTML, display
 import gradio as gr
 
 
@@ -38,8 +39,8 @@ def newWebsite(media):
     url = ''
     if media == 'Facebook':
         url+=f"https://www.facebook.com/sharer/sharer.php?u={URL}"
-
-    webbrowser.open_new_tab(url)
+    click_script = f'<script>window.open("{url}", "_blank");</script>'
+    display(HTML(click_script))
 
 
 def generateQRcode(audio, effect, request: gr.Request):
