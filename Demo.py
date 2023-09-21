@@ -202,23 +202,41 @@ def generate_room_inside(cata, other, filename, PROMPT):
 
 
 
-with gr.Blocks() as demo:
-
+with gr.Blocks(theme='Taithrah/Minimal', css=".gradio-container {background: url('file=/home/demo/source/background.png')}") as demo:
     fileName = gr.Textbox(visible=False)
     prompt = gr.Textbox(visible=False)
     url = gr.Textbox(visible=False)
     with gr.Tabs():
+        gr.Markdown("""
+        <html>
+        <head>
+        <style>
+            .centered-text {
+            text-align: center;
+            font-weight: bold;
+            }
+        </style>
+        </head>
+        <body>
+
+        <p style="font-size: 40px; text-align: center; color: blue;">Design Your Dream House!</p>
+        <p style="color: blue">1.Create a comprehensive design for your house, inside and outside.</p>
+        <p style="color: blue">2.Craft unique background music and video effects for your content.</p>
+        <p style="color: blue">3.Effortlessly share your QR code across diverse social media platforms.</p>
+        </body>
+        </html>
+        """)
         with gr.TabItem("Design your House(Outside)"):
             with gr.Row():
-                options = gr.Dropdown(["Asian", "Gothic", "Modern", "Neoclassical", "Nordic", "Other, please specify"], multiselect=False, label="Choose your House style")
+                options = gr.Dropdown(choices = ["Asian", "Gothic", "Modern", "Neoclassical", "Nordic", "Other, please specify"], value = "Asian", multiselect=False, label="Choose your House style")
                 txt     = gr.Textbox(label="House Style", visible=False)
             #btn1 = gr.Button(value="View Some example!")
             with gr.Row():
-                img1    =  gr.Image()
-                img2    =  gr.Image()
-                img3    =  gr.Image()
-                img4    =  gr.Image()
-                img5    =  gr.Image()
+                img1    =  gr.Image(value = Image.open(os.getcwd() + '/HouseStyle/Asain/Asain1.png'))
+                img2    =  gr.Image(value = Image.open(os.getcwd() + '/HouseStyle/Asain/Asain2.png'))
+                img3    =  gr.Image(value = Image.open(os.getcwd() + '/HouseStyle/Asain/Asain3.png'))
+                img4    =  gr.Image(value = Image.open(os.getcwd() + '/HouseStyle/Asain/Asain4.png'))
+                img5    =  gr.Image(value = Image.open(os.getcwd() + '/HouseStyle/Asain/Asain5.png'))
 
             with gr.Row():
                 txt1 = gr.Textbox(label="Enter Your Description", lines=3)
