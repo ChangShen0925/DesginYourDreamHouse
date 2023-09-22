@@ -8,17 +8,19 @@ transformers
 accelerate
 opencv-python
 scipy
-torch
-urllib3
-idna
-certifi
-pyyaml
-filelock
-decorator
-pyparsing
-cycler
-kiwisolver
-click
-six
-pyrsistent
-toolz
+git+https://github.com/huggingface/transformers.git
+IPython
+--upgrade torch
+--upgrade urllib3
+--upgrade idna
+--upgrade certifi
+--upgrade pyyaml
+--upgrade filelock
+--upgrade decorator
+--upgrade pyparsing
+--upgrade cycler
+--upgrade kiwisolver
+--upgrade click
+--upgrade six
+--upgrade pyrsistent
+--upgrade toolz

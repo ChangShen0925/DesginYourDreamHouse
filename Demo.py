@@ -10,7 +10,7 @@ from moviepy.editor import VideoFileClip
 import gradio as gr
 import random
 import time
-
+import json
 
 
 
@@ -149,8 +149,9 @@ def generator(Prompt):
     
 
 
-def generateImage(Prompt, style):
-    PROMPT = Prompt
+def generateImage(dic, Prompt, style):
+    room_dic = json.loads(dic)
+    room_dic['house'] = "The front view of A house in style of " + style +  "under the blue sky which " + Prompt
     if len(style) == 0:
         style = ''
     frontview = generator("The front view of A house in style of " + style +  "under the blue sky which " + Prompt)
@@ -165,7 +166,7 @@ def generateImage(Prompt, style):
     fileName+=str(int(timestamp))
     os.system(f"mkdir {fileName}")
     frontview.save(f'{fileName}/House.png')
-    return frontview, fileName, Prompt
+    return frontview, fileName, json.dumps(room_dic)
 
 
 def generate_audio(prompt, filename):
@@ -178,12 +179,12 @@ def generate_audio(prompt, filename):
 
 
 def generate_room_inside(cata, other, filename, PROMPT):
-    
+    room_dic = json.loads(PROMPT)
     if filename == '':
         return None, None, None
 
     imgList =  os.listdir(filename)
-    result = generator("The panorama of the room of " + cata +  " which is "+ other + "in a house of " + PROMPT)
+    result = generator("The panorama of the room of " + cata +  " which is "+ other + "in a house of " + room_dic['house'])
     if cata != 'bedroom':
         result.save(f'{filename}/{cata}.png')
         return result, gr.Image.update(visible=False), gr.Image.update(visible=False)
@@ -233,7 +234,7 @@ css="""
 
 with gr.Blocks(theme='Taithrah/Minimal', css = css) as demo:
     fileName = gr.Textbox(visible=False)
-    prompt = gr.Textbox(visible=False)
+    prompt = gr.Textbox(value = '{"house": null, "living room": null, "kitchen": null, "dining room": null, "bathroom": null, "bedroom": [null, null, null, null]}',visible=False)
     url = gr.Textbox(visible=False)
     gr.Markdown("""
         <html>
@@ -276,7 +277,7 @@ with gr.Blocks(theme='Taithrah/Minimal', css = css) as demo:
             #btn1.click(viewExample, inputs = [options], outputs = [img1, img2, img3, img4, img5])
             btn2.click(clear, inputs=[], outputs=[txt1])
             btn3.click(enhance_your_sentence, inputs = [options, txt, txt1], outputs = [txt1])
-            btn4.click(generateImage, inputs=[txt1, options], outputs=[img, fileName, prompt])
+            btn4.click(generateImage, inputs=[prompt, txt1, options], outputs=[img, fileName, prompt])
             options.change(change_options, inputs = [options], outputs = [txt])
             options.change(viewExample, inputs = [options], outputs = [img1, img2, img3, img4, img5])
 
