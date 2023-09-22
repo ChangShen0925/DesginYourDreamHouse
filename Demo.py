@@ -7,7 +7,6 @@ import cv2
 import numpy as np
 import webbrowser
 from moviepy.editor import VideoFileClip
-from IPython.display import HTML, display
 import gradio as gr
 import random
 import time
@@ -51,6 +50,8 @@ def newWebsite(media, URL):
 
 
 def generateQRcode(audio, effect, filename, request: gr.Request):
+    if filename == '':
+        return None, None, None
     url = str(request.headers['origin']) + '/file=' + os.getcwd()
     if audio:
         url+=f'/{filename}/output_with_audio.mp4'
@@ -73,7 +74,9 @@ def generateQRcode(audio, effect, filename, request: gr.Request):
 
 
 def viewAllimages(filename):
-    output = [Image.open(f'{filename}/House.png'), None, None, None, None, None, None, None, None,]
+    if filename == '':
+        return None, None, None, None, None, None, None, None
+    output = [Image.open(f'{filename}/House.png'), None, None, None, None, None, None, None]
     for i in os.listdir(filename):
         if ('.png' in i and 'House' not in i) and 'qrcode.png' != i:
             for j in range(len(output)):
@@ -81,36 +84,42 @@ def viewAllimages(filename):
                     output[j] = Image.open(f'{filename}/{i}')
                     break
 
-    return output[0], output[1], output[2], output[3], output[4], output[5], output[6], output[7], output[8]
+    return output[0], output[1], output[2], output[3], output[4], output[5], output[6], output[7]
 
-def generateVideo(cb1, cb2, cb3, cb4, cb5, cb6, cb7, cb8, cb9, audio, effect, filename):
+def generateVideo(cb1, cb2, cb3, cb4, cb5, cb6, cb7, cb8, audio, effect, filename):
+    if filename == '':
+        return None
     if audio and effect:
-        AddImageEffects([cb1, cb2, cb3, cb4, cb5, cb6, cb7, cb8, cb9], viewAllimages(filename), filename)
+        AddImageEffects([cb1, cb2, cb3, cb4, cb5, cb6, cb7, cb8], viewAllimages(filename), filename)
         audio2video(VideoFileClip(f"{filename}/output_with_effects.mp4"), filename)
         return os.getcwd() + f"/{filename}/output_with_audio.mp4"
     elif audio:
-        JustImage([cb1, cb2, cb3, cb4, cb5, cb6, cb7, cb8, cb9], viewAllimages(filename), filename)
+        JustImage([cb1, cb2, cb3, cb4, cb5, cb6, cb7, cb8], viewAllimages(filename), filename)
         audio2video(VideoFileClip(f"{filename}/output.mp4"), filename)
         return os.getcwd() + f"/{filename}/output_with_audio.mp4"
     elif effect:
-        AddImageEffects([cb1, cb2, cb3, cb4, cb5, cb6, cb7, cb8, cb9], viewAllimages(filename), filename)
+        AddImageEffects([cb1, cb2, cb3, cb4, cb5, cb6, cb7, cb8], viewAllimages(filename), filename)
         return os.getcwd() + f"/{filename}/output_with_effects.mp4"
     else:
-        JustImage([cb1, cb2, cb3, cb4, cb5, cb6, cb7, cb8, cb9], viewAllimages(filename), filename)
+        JustImage([cb1, cb2, cb3, cb4, cb5, cb6, cb7, cb8], viewAllimages(filename), filename)
         return os.getcwd() + f"/{filename}/output.mp4"
     
 
 def viewCurrentImage(cata, filename):
+    if filename == '' and cata != 'bedroom':
+        return None, gr.Image.update(visible=False), gr.Image.update(visible=False)
+    elif filename == '':
+        return None, gr.Image.update(visible=True), gr.Image.update(visible=True)
     if cata == 'bedroom':
         for i in os.listdir(filename):
             if 'bedroom1.png' == i:
-                return Image.open(f'{filename}/{i}'), gr.Image.update(visible=True), gr.Image.update(visible=True), gr.Image.update(visible=True)
-        return None, gr.Image.update(visible=True), gr.Image.update(visible=True), gr.Image.update(visible=True)
+                return Image.open(f'{filename}/{i}'), gr.Image.update(visible=True), gr.Image.update(visible=True)
+        return None, gr.Image.update(visible=True), gr.Image.update(visible=True)
     else:
         for i in os.listdir(filename):
             if f'{cata}.png' == i:
-                return Image.open(f'{filename}/{i}'), gr.Image.update(visible=False), gr.Image.update(visible=False), gr.Image.update(visible=False)
-        return None, gr.Image.update(visible=False), gr.Image.update(visible=False), gr.Image.update(visible=False)
+                return Image.open(f'{filename}/{i}'), gr.Image.update(visible=False), gr.Image.update(visible=False)
+        return None, gr.Image.update(visible=False), gr.Image.update(visible=False)
        
     
 def change_options(choice):
@@ -160,6 +169,8 @@ def generateImage(Prompt, style):
 
 
 def generate_audio(prompt, filename):
+    if filename == '':
+        return None
     text2audio(prompt, filename)
     torch.cuda.empty_cache()
     return os.getcwd()+f'/{filename}/techno.wav'
@@ -167,47 +178,64 @@ def generate_audio(prompt, filename):
 
 
 def generate_room_inside(cata, other, filename, PROMPT):
-   
+    
+    if filename == '':
+        return None, None, None
+
     imgList =  os.listdir(filename)
-
-    if cata == '':
-        return "Please at least select the room!", None
+    result = generator("The panorama of the room of " + cata +  " which is "+ other + "in a house of " + PROMPT)
+    if cata != 'bedroom':
+        result.save(f'{filename}/{cata}.png')
+        return result, gr.Image.update(visible=False), gr.Image.update(visible=False)
     else:
-        result = generator("The panorama of the room of " + cata +  " which is "+ other + "in a house of " + PROMPT)
-        if cata != 'bedroom':
-            result.save(f'{filename}/{cata}.png')
-            return "Do you like the image?", result, gr.Image.update(visible=False), gr.Image.update(visible=False), gr.Image.update(visible=False)
+        if 'bedroom1.png' not in imgList:
+            result.save(f'{filename}/bedroom1.png')
+            return result, gr.Image.update(visible=True), gr.Image.update(visible=True)
+        elif 'bedroom2.png' not in imgList:
+            result.save(f'{filename}/bedroom2.png')
+            return gr.Image.update(visible=True), result, gr.Image.update(visible=True)
+        elif 'bedroom3.png' not in imgList:
+            result.save(f'{filename}/bedroom3.png')
+            return gr.Image.update(visible=True), gr.Image.update(visible=True), result
         else:
-            if 'bedroom1.png' not in imgList:
-                result.save(f'{filename}/bedroom1.png')
-                return "Do you like the image?", result, gr.Image.update(visible=True), gr.Image.update(visible=True), gr.Image.update(visible=True)
-            elif 'bedroom2.png' not in imgList:
-                result.save(f'{filename}/bedroom2.png')
-                return "Do you like the image?", gr.Image.update(visible=True), result, gr.Image.update(visible=True), gr.Image.update(visible=True)
-            elif 'bedroom3.png' not in imgList:
-                result.save(f'{filename}/bedroom3.png')
-                return "Do you like the image?", gr.Image.update(visible=True), gr.Image.update(visible=True), result, gr.Image.update(visible=True)
-            elif 'bedroom4.png' not in imgList:
-                result.save(f'{filename}/bedroom4.png')
-                return "Do you like the image?", gr.Image.update(visible=True), gr.Image.update(visible=True), gr.Image.update(visible=True), result
-            else:
-                Image.open(f'{filename}/bedroom2.png').save(f'{filename}/bedroom1.png')
-                Image.open(f'{filename}/bedroom3.png').save(f'{filename}/bedroom2.png')
-                Image.open(f'{filename}/bedroom4.png').save(f'{filename}/bedroom3.png')
-                result.save(f'{filename}/bedroom4.png')
-       
-                return "Do you like the image?", Image.open(f'{filename}/bedroom1.png'), Image.open(f'{filename}/bedroom2.png'), Image.open(f'{filename}/bedroom3.png'), Image.open(f'{filename}/bedroom4.png')
+            Image.open(f'{filename}/bedroom2.png').save(f'{filename}/bedroom1.png')
+            Image.open(f'{filename}/bedroom3.png').save(f'{filename}/bedroom2.png')
+            result.save(f'{filename}/bedroom3.png')
+    
+            return Image.open(f'{filename}/bedroom1.png'), Image.open(f'{filename}/bedroom2.png'), Image.open(f'{filename}/bedroom3.png')
 
 
 
 
+css="""
+    .select button.selected{
+        background-color: #4CAF50;
+        font-size: 17px !important;
+        width: 374px;
+        margin: 0px 1px;
+    }
+    .hover button:hover{
+        background-color: #FFFFFF;
+        font-size: 17px !important;
+        color: black;
+        transition: all 1s ease;
+        width: 374px;
+        margin: 0px 1px;
+    }
+    .slient button{
+        background-color: #8aedd3;
+        font-size: 17px !important;
+        color: black;
+        width: 374px;
+        margin: 0px 1px;
+    }
+    """
 
-with gr.Blocks(theme='Taithrah/Minimal') as demo:
+with gr.Blocks(theme='Taithrah/Minimal', css = css) as demo:
     fileName = gr.Textbox(visible=False)
     prompt = gr.Textbox(visible=False)
     url = gr.Textbox(visible=False)
-    with gr.Tabs():
-        gr.Markdown("""
+    gr.Markdown("""
         <html>
         <head>
         <style>
@@ -219,11 +247,12 @@ with gr.Blocks(theme='Taithrah/Minimal') as demo:
         </head>
         <body>
 
-        <p style="font-size: 50px; text-align: center; color: lightblue;">Design Your Dream House!</p>
+        <p style="font-size: 50px; text-align: center; color: blue;">Design Your Dream House!</p>
         </body>
         </html>
         """)
-        with gr.TabItem("Design your House(Outside)"):
+    with gr.Tabs(elem_classes=["hover", "select", "slient"]):
+        with gr.TabItem("Step one: Design your house exterior look!"):
             with gr.Row():
                 options = gr.Dropdown(choices = ["Asian", "Gothic", "Modern", "Neoclassical", "Nordic", "Other, please specify"], value = "Asian", multiselect=False, label="Choose your House style")
                 txt     = gr.Textbox(label="House Style", visible=False)
@@ -243,7 +272,7 @@ with gr.Blocks(theme='Taithrah/Minimal') as demo:
                 btn3 = gr.Button(variant="primary", value="Enhance Your Sentence?")
                 btn4 = gr.Button(variant="primary", value="Submit")
                 # video_1 = gr.Video()
-            img    =  gr.Image(height = 900, width = 1600)
+            img    =  gr.Image(height = 512, width = 1536)
             #btn1.click(viewExample, inputs = [options], outputs = [img1, img2, img3, img4, img5])
             btn2.click(clear, inputs=[], outputs=[txt1])
             btn3.click(enhance_your_sentence, inputs = [options, txt, txt1], outputs = [txt1])
@@ -251,89 +280,99 @@ with gr.Blocks(theme='Taithrah/Minimal') as demo:
             options.change(change_options, inputs = [options], outputs = [txt])
             options.change(viewExample, inputs = [options], outputs = [img1, img2, img3, img4, img5])
 
-        with gr.TabItem("Design your House(Inside)"):
+        with gr.TabItem("Step two: Plan your house's interior style") as tab2:
+            room_options = gr.Dropdown([ "dinning room", "kitchen", "living room", "bathroom", "bedroom"],  value = "dinning room", multiselect=False, label="Choose your design")
+            I_txt = gr.Textbox(label="Enter Your Description", line = 3)
             with gr.Row():
-                room_options = gr.Dropdown([ "dinning room", "kitchen", "living room", "bathroom", "bedroom"], multiselect=False, label="Choose your design")
-                I_txt = gr.Textbox(label="Enter Your Description")
-            with gr.Row():
-                btn1 = gr.Button(value="Clear")
-                btn2 = gr.Button(value="Enhance Your Sentence?")
-                btn3 = gr.Button(value="Submit")
+                btn1 = gr.Button(variant="primary", value="Clear")
+                btn2 = gr.Button(variant="primary", value="Enhance Your Sentence?")
+                btn3 = gr.Button(variant="primary", value="Submit")
             
-            I_txt_2 = gr.Textbox()
 
             with gr.Row():
                 I_im_1 = gr.Image()
                 I_im_2 = gr.Image(visible = False)
-            with gr.Row():
                 I_im_3 = gr.Image(visible = False)
-                I_im_4 = gr.Image(visible = False)
+
 
             
             btn1.click(clear, inputs=[], outputs=[I_txt])
             btn2.click(enhance_your_sentence2, inputs = [room_options, I_txt], outputs = [I_txt])
-            btn3.click(generate_room_inside, inputs=[room_options, I_txt, fileName, prompt], outputs=[I_txt_2, I_im_1, I_im_2, I_im_3, I_im_4])
-            room_options.change(viewCurrentImage, inputs = [room_options, fileName], outputs = [I_im_1, I_im_2, I_im_3, I_im_4])
+            btn3.click(generate_room_inside, inputs=[room_options, I_txt, fileName, prompt], outputs=[I_im_1, I_im_2, I_im_3])
+            room_options.change(viewCurrentImage, inputs = [room_options, fileName], outputs = [I_im_1, I_im_2, I_im_3])
+            tab2.select(viewCurrentImage, inputs = [room_options, fileName], outputs = [I_im_1, I_im_2, I_im_3])
 
-        with gr.TabItem("Design your background music and image effects"):
-            btn_view_images = gr.Button(value="View all designs!")
+        with gr.TabItem("Step three: Create your audio-visual effects") as tab3:
+            gr.Markdown("""
+                        <div>
+                            <p style="font-size: 25px; color: blue;">View All your current Designs!</p>
+                        </div>
+                        """)
             with gr.Row():
-                cb_house   = gr.Checkbox(value = 'True')
-                cb_dinning = gr.Checkbox(value = 'True')
-                cb_kitchen = gr.Checkbox(value = 'True')
+                cb_house   = gr.Checkbox(label = "Chosen", value = 'True')
+                cb_dinning = gr.Checkbox(label = "Chosen", value = 'True')
+                cb_kitchen = gr.Checkbox(label = "Chosen", value = 'True')
+                cb_living  = gr.Checkbox(label = "Chosen", value = 'True')
             
             with gr.Row():
                 img_house   = gr.Image()
                 img_dinning = gr.Image()
                 img_kitchen = gr.Image()
-            
-            with gr.Row():
-                cb_living   = gr.Checkbox(value = 'True')
-                cb_bath     = gr.Checkbox(value = 'True')
-                cb_bedroom1 = gr.Checkbox(value = 'True')
-            
-            with gr.Row():
                 img_living   = gr.Image()
+            
+            with gr.Row():
+                
+                cb_bath     = gr.Checkbox(label = "Chosen", value = 'True')
+                cb_bedroom1 = gr.Checkbox(label = "Chosen", value = 'True')
+                cb_bedroom2 = gr.Checkbox(label = "Chosen", value = 'True')
+                cb_bedroom3 = gr.Checkbox(label = "Chosen", value = 'True')
+            
+            with gr.Row():
+                
                 img_bath     = gr.Image()
                 img_bedroom1 = gr.Image()
-
-            with gr.Row():
-                cb_bedroom2 = gr.Checkbox(value = 'True')
-                cb_bedroom3 = gr.Checkbox(value = 'True')
-                cb_bedroom4 = gr.Checkbox(value = 'True')
-            
-            with gr.Row():
                 img_bedroom2 = gr.Image()
                 img_bedroom3 = gr.Image()
-                img_bedroom4 = gr.Image()
+                
 
 
+            gr.Markdown("""
+                        <div>
+                            <p style="font-size: 25px; color: blue;">Design Your own Music!</p>
+                        </div>
+                        """)
             with gr.Row():
                 txt   = gr.Textbox(label="Enter Your Description")
                 audio = gr.Audio(source="microphone")
             with gr.Row():
-                btn1 = gr.Button(value="Clear")
-                btn2 = gr.Button(value="Enhance Your Sentence?")
-                btn3 = gr.Button(value="Submit")
+                btn1 = gr.Button(variant="primary", value="Clear")
+                btn2 = gr.Button(variant="primary", value="Enhance Your Sentence?")
+                btn3 = gr.Button(variant="primary", value="Submit")
 
             btn1.click(clear, inputs=[], outputs=[txt])
             btn2.click(enhance_your_sentence3, inputs = [txt], outputs = [txt])
             btn3.click(generate_audio, inputs=[txt, fileName], outputs=[audio])
-            btn_view_images.click(viewAllimages, inputs = [fileName], outputs = [img_house, img_dinning, img_kitchen, img_living, img_bath, img_bedroom1, img_bedroom2, img_bedroom3, img_bedroom4])
+            tab3.select(viewAllimages, inputs = [fileName], outputs = [img_house, img_dinning, img_kitchen, img_living, img_bath, img_bedroom1, img_bedroom2, img_bedroom3])
 
+            gr.Markdown("""
+                        <div>
+                            <p style="font-size: 25px; color: blue;">Generate the Video!</p>
+                        </div>
+                        """)
+            
             with gr.Row():
                 cb_audio  = gr.Checkbox(value = 'True', label = "audio ")
                 cb_effect = gr.Checkbox(value = 'True', label = "effect")
             
-            final_video = gr.Video()
+            final_video = gr.Video(height = 512, width = 1536)
             btn_video = gr.Button(value="Generate Your Video!")
-            btn_video.click(generateVideo, inputs = [cb_house, cb_dinning, cb_kitchen, cb_living, cb_bath, cb_bedroom1, cb_bedroom2, cb_bedroom3, cb_bedroom4, cb_audio, cb_effect, fileName], outputs = [final_video])
+            btn_video.click(generateVideo, inputs = [cb_house, cb_dinning, cb_kitchen, cb_living, cb_bath, cb_bedroom1, cb_bedroom2, cb_bedroom3, cb_audio, cb_effect, fileName], outputs = [final_video])
         
-        with gr.TabItem("QR Code"):
+        with gr.TabItem("Step four: Generate your unique QR code now"):
             with gr.Row():
                 QR_btn = gr.Button(value = 'Generate Your QR code!')
             
-            QR_img  = gr.Image(height = 256, width = 1280, container = False)
+            QR_img  = gr.Image(height = 512, width = 1536, container = False)
             with gr.Row():
                 QR_link   = gr.Textbox(label = 'Copy your link', show_copy_button = True, scale = 10)
                 QR_share  = gr.Dropdown([ "Twitter", "Facebook", "Weibo", "Reddit"], multiselect=False, label="Share", scale = 1)

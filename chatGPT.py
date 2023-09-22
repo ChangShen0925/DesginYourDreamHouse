@@ -1,5 +1,5 @@
 import openai
-openai.api_key = ""
+openai.api_key = "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"
 
 def enhance_your_sentence(style, text, prompt):
     if len(style) == 0 or 'Other' in style:
