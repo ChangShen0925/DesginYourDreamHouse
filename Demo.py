@@ -308,11 +308,11 @@ with gr.Blocks(theme='Taithrah/Minimal', css = css) as demo:
                 txt     = gr.Textbox(label="House Style", visible=False)
             #btn1 = gr.Button(value="View Some example!")
             with gr.Row():
-                img1    =  gr.Image(value = Image.open(os.getcwd() + '/HouseStyle/Asain/Asain1.png'), label = "Preview 1")
-                img2    =  gr.Image(value = Image.open(os.getcwd() + '/HouseStyle/Asain/Asain2.png'), label = "Preview 2")
-                img3    =  gr.Image(value = Image.open(os.getcwd() + '/HouseStyle/Asain/Asain3.png'), label = "Preview 3")
-                img4    =  gr.Image(value = Image.open(os.getcwd() + '/HouseStyle/Asain/Asain4.png'), label = "Preview 4")
-                img5    =  gr.Image(value = Image.open(os.getcwd() + '/HouseStyle/Asain/Asain5.png'), label = "Preview 5")
+                img1    =  gr.Image(value = Image.open(os.getcwd() + '/HouseStyle/Asain/Asain1.png'), show_download_button = False, label = "Preview 1")
+                img2    =  gr.Image(value = Image.open(os.getcwd() + '/HouseStyle/Asain/Asain2.png'), show_download_button = False, label = "Preview 2")
+                img3    =  gr.Image(value = Image.open(os.getcwd() + '/HouseStyle/Asain/Asain3.png'), show_download_button = False, label = "Preview 3")
+                img4    =  gr.Image(value = Image.open(os.getcwd() + '/HouseStyle/Asain/Asain4.png'), show_download_button = False, label = "Preview 4")
+                img5    =  gr.Image(value = Image.open(os.getcwd() + '/HouseStyle/Asain/Asain5.png'), show_download_button = False, label = "Preview 5")
 
             with gr.Row():
                 txt1 = gr.Textbox(label="Enter Your Description", lines=3)
@@ -322,7 +322,7 @@ with gr.Blocks(theme='Taithrah/Minimal', css = css) as demo:
                 btn3 = gr.Button(variant="primary", value="Enhance Your Sentence?")
                 btn4 = gr.Button(variant="primary", value="Submit")
                 # video_1 = gr.Video()
-            img    =  gr.Image(height = 512, width = 1536)
+            img    =  gr.Image(height = 512, width = 1536, show_download_button = False,)
             #btn1.click(viewExample, inputs = [options], outputs = [img1, img2, img3, img4, img5])
             btn2.click(clear, inputs=[], outputs=[txt1])
             btn3.click(enhance_your_sentence, inputs = [options, txt, txt1], outputs = [txt1])
@@ -340,9 +340,9 @@ with gr.Blocks(theme='Taithrah/Minimal', css = css) as demo:
             
 
             with gr.Row():
-                I_im_1 = gr.Image()
-                I_im_2 = gr.Image(visible = False)
-                I_im_3 = gr.Image(visible = False)
+                I_im_1 = gr.Image(show_download_button = False)
+                I_im_2 = gr.Image(show_download_button = False, visible = False)
+                I_im_3 = gr.Image(show_download_button = False, visible = False)
 
 
             
@@ -365,10 +365,10 @@ with gr.Blocks(theme='Taithrah/Minimal', css = css) as demo:
                 cb_living  = gr.Checkbox(label = "Chosen", value = 'True')
             
             with gr.Row():
-                img_house   = gr.Image()
-                img_dinning = gr.Image()
-                img_kitchen = gr.Image()
-                img_living   = gr.Image()
+                img_house   = gr.Image(show_download_button = False)
+                img_dinning = gr.Image(show_download_button = False)
+                img_kitchen = gr.Image(show_download_button = False)
+                img_living   = gr.Image(show_download_button = False)
             
             with gr.Row():
                 
@@ -379,10 +379,10 @@ with gr.Blocks(theme='Taithrah/Minimal', css = css) as demo:
             
             with gr.Row():
                 
-                img_bath     = gr.Image()
-                img_bedroom1 = gr.Image()
-                img_bedroom2 = gr.Image()
-                img_bedroom3 = gr.Image()
+                img_bath     = gr.Image(show_download_button = False)
+                img_bedroom1 = gr.Image(show_download_button = False)
+                img_bedroom2 = gr.Image(show_download_button = False)
+                img_bedroom3 = gr.Image(show_download_button = False)
                 
             gr.Markdown("""
                         <div>
@@ -427,7 +427,7 @@ with gr.Blocks(theme='Taithrah/Minimal', css = css) as demo:
                 cb_audio  = gr.Checkbox(value = 'True', label = "audio ")
                 cb_effect = gr.Checkbox(value = 'True', label = "effect")
                 cb_descri = gr.Checkbox(value = 'True', label = "description")
-            final_video = gr.Video(height = 512, width = 1536)
+            final_video = gr.Video(height = 512, width = 1536, show_download_button = False,)
             btn_video = gr.Button(value="Generate Your Video!")
             btn_video.click(generateVideo, inputs = [cb_house, cb_dinning, cb_kitchen, cb_living, cb_bath, cb_bedroom1, cb_bedroom2, cb_bedroom3, cb_audio, cb_effect, cb_descri, fileName], outputs = [final_video])
         
@@ -435,7 +435,7 @@ with gr.Blocks(theme='Taithrah/Minimal', css = css) as demo:
             with gr.Row():
                 QR_btn = gr.Button(value = 'Generate Your QR code!')
             
-            QR_img  = gr.Image(height = 512, width = 1536, container = False)
+            QR_img  = gr.Image(height = 512, width = 1536, container = False, show_download_button = False,)
             with gr.Row():
                 QR_link   = gr.Textbox(label = 'Copy your link', show_copy_button = True, scale = 10)
                 QR_share  = gr.Dropdown([ "Twitter", "Facebook", "Weibo", "Reddit"], multiselect=False, label="Share", scale = 1)
