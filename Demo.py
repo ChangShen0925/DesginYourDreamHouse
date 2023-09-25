@@ -11,7 +11,7 @@ import gradio as gr
 import random
 import time
 import json
-
+from TTS import *
 
 
 
@@ -20,7 +20,7 @@ import os
 import torch
 
 
-from chatGPT import enhance_your_sentence, enhance_your_sentence2, enhance_your_sentence3
+from chatGPT import *
 from Additional_elements import *
 
 from diffusers.pipeline_utils import DiffusionPipeline
@@ -47,14 +47,38 @@ def newWebsite(media, URL):
 
     return gr.Button.update(value = 'share', scale = 1, link = url)
 
+def generateDescription(prompts, filename, voice):
+    room_dic = json.loads(prompts)
+    if filename == '':
+        return None, None
+    
+    description = [enhance_your_sentence4('This is the exterior look of the house, ' + room_dic['house'])]
+    for i in os.listdir(filename):
+        if ('.png' in i and 'House' not in i) and 'qrcode.png' != i:
+            if ('1' in i or '2' in i) or '3' in i:
+                description.append(enhance_your_sentence4('And then we can hou go the next room.' + room_dic['bedroom'][int(i[-5]) - 1]))
+            else:
+                description.append(enhance_your_sentence4('And then we can hou go the next room.' + room_dic[i[0:-4]]))
+    
+    description[-1]+="This is the end of the house"
 
+    
+    introduction = ''
+    for i in range(len(description)):
+        introduction+=description[i] + ' '
+        textToSpeech(description[i], filename, voice, i)
+        
+    mergeAll(filename)
+    return introduction, os.getcwd()+f'/{filename}/bark_out.wav'
 
-def generateQRcode(audio, effect, filename, request: gr.Request):
+def generateQRcode(audio, effect, description, filename, request: gr.Request):
     if filename == '':
         return None, None, None
     url = str(request.headers['origin']) + '/file=' + os.getcwd()
     if audio:
         url+=f'/{filename}/output_with_audio.mp4'
+    elif description:
+        url+=f'/{filename}/output_with_speech.mp4'
     elif effect:
         url+=f'/{filename}/output_with_effects.mp4'
     else:
@@ -86,23 +110,41 @@ def viewAllimages(filename):
 
     return output[0], output[1], output[2], output[3], output[4], output[5], output[6], output[7]
 
-def generateVideo(cb1, cb2, cb3, cb4, cb5, cb6, cb7, cb8, audio, effect, filename):
+def generateVideo(cb1, cb2, cb3, cb4, cb5, cb6, cb7, cb8, audio, effect, description, filename):
     if filename == '':
         return None
-    if audio and effect:
-        AddImageEffects([cb1, cb2, cb3, cb4, cb5, cb6, cb7, cb8], viewAllimages(filename), filename)
-        audio2video(VideoFileClip(f"{filename}/output_with_effects.mp4"), filename)
-        return os.getcwd() + f"/{filename}/output_with_audio.mp4"
-    elif audio:
-        JustImage([cb1, cb2, cb3, cb4, cb5, cb6, cb7, cb8], viewAllimages(filename), filename)
-        audio2video(VideoFileClip(f"{filename}/output.mp4"), filename)
-        return os.getcwd() + f"/{filename}/output_with_audio.mp4"
-    elif effect:
-        AddImageEffects([cb1, cb2, cb3, cb4, cb5, cb6, cb7, cb8], viewAllimages(filename), filename)
-        return os.getcwd() + f"/{filename}/output_with_effects.mp4"
+    if effect:
+        AddImageEffects([cb1, cb2, cb3, cb4, cb5, cb6, cb7, cb8], viewAllimages(filename), filename, description)
+        if description:
+            speech2video(VideoFileClip(f"{filename}/output_with_effects.mp4"), filename)
+            if audio:
+                audio2video(VideoFileClip(f"{filename}/output_with_speech.mp4"), filename, description)
+                return os.getcwd() + f"/{filename}/output_with_audio.mp4"
+            else:
+                return os.getcwd() + f"/{filename}/output_with_speech.mp4"
+        else:
+            if audio:
+                audio2video(VideoFileClip(f"{filename}/output_with_effects.mp4"), filename, description)
+                return os.getcwd() + f"/{filename}/output_with_audio.mp4"
+            else:
+                return os.getcwd() + f"/{filename}/output_with_effects.mp4"
+            
     else:
-        JustImage([cb1, cb2, cb3, cb4, cb5, cb6, cb7, cb8], viewAllimages(filename), filename)
-        return os.getcwd() + f"/{filename}/output.mp4"
+        JustImage([cb1, cb2, cb3, cb4, cb5, cb6, cb7, cb8], viewAllimages(filename), filename, description)
+        if description:
+            speech2video(VideoFileClip(f"{filename}/output.mp4"), filename)
+            if audio:
+                audio2video(VideoFileClip(f"{filename}/output_with_speech.mp4"), filename, description)
+                return os.getcwd() + f"/{filename}/output_with_audio.mp4"
+            else:
+                return os.getcwd() + f"/{filename}/output_with_speech.mp4"
+        else:
+            if audio:
+                audio2video(VideoFileClip(f"{filename}/output.mp4"), filename, description)
+                return os.getcwd() + f"/{filename}/output_with_audio.mp4"
+            else:
+                return os.getcwd() + f"/{filename}/output.mp4"
+
     
 
 def viewCurrentImage(cata, filename):
@@ -181,29 +223,36 @@ def generate_audio(prompt, filename):
 def generate_room_inside(cata, other, filename, PROMPT):
     room_dic = json.loads(PROMPT)
     if filename == '':
-        return None, None, None
+        return None, None, None, None
 
     imgList =  os.listdir(filename)
     result = generator("The panorama of the room of " + cata +  " which is "+ other + "in a house of " + room_dic['house'])
     if cata != 'bedroom':
+        room_dic[cata] = "The panorama of the room of " + cata +  " which is "+ other + "in a house of " + room_dic['house']
         result.save(f'{filename}/{cata}.png')
-        return result, gr.Image.update(visible=False), gr.Image.update(visible=False)
+        return result, gr.Image.update(visible=False), gr.Image.update(visible=False), json.dumps(room_dic)
     else:
         if 'bedroom1.png' not in imgList:
+            room_dic[cata][0] = "The panorama of the room of " + cata +  " which is "+ other + "in a house of " + room_dic['house']
             result.save(f'{filename}/bedroom1.png')
-            return result, gr.Image.update(visible=True), gr.Image.update(visible=True)
+            return result, gr.Image.update(visible=True), gr.Image.update(visible=True), json.dumps(room_dic)
         elif 'bedroom2.png' not in imgList:
+            room_dic[cata][1] = "The panorama of the room of " + cata +  " which is "+ other + "in a house of " + room_dic['house']
             result.save(f'{filename}/bedroom2.png')
-            return gr.Image.update(visible=True), result, gr.Image.update(visible=True)
+            return gr.Image.update(visible=True), result, gr.Image.update(visible=True), json.dumps(room_dic)
         elif 'bedroom3.png' not in imgList:
+            room_dic[cata][2] = "The panorama of the room of " + cata +  " which is "+ other + "in a house of " + room_dic['house']
             result.save(f'{filename}/bedroom3.png')
-            return gr.Image.update(visible=True), gr.Image.update(visible=True), result
+            return gr.Image.update(visible=True), gr.Image.update(visible=True), result, json.dumps(room_dic)
         else:
+            room_dic[cata][0] = room_dic[cata][1]
             Image.open(f'{filename}/bedroom2.png').save(f'{filename}/bedroom1.png')
+            room_dic[cata][1] = room_dic[cata][2]
             Image.open(f'{filename}/bedroom3.png').save(f'{filename}/bedroom2.png')
+            room_dic[cata][2] = "The panorama of the room of " + cata +  " which is "+ other + "in a house of " + room_dic['house']
             result.save(f'{filename}/bedroom3.png')
     
-            return Image.open(f'{filename}/bedroom1.png'), Image.open(f'{filename}/bedroom2.png'), Image.open(f'{filename}/bedroom3.png')
+            return Image.open(f'{filename}/bedroom1.png'), Image.open(f'{filename}/bedroom2.png'), Image.open(f'{filename}/bedroom3.png'), json.dumps(room_dic)
 
 
 
@@ -299,7 +348,7 @@ with gr.Blocks(theme='Taithrah/Minimal', css = css) as demo:
             
             btn1.click(clear, inputs=[], outputs=[I_txt])
             btn2.click(enhance_your_sentence2, inputs = [room_options, I_txt], outputs = [I_txt])
-            btn3.click(generate_room_inside, inputs=[room_options, I_txt, fileName, prompt], outputs=[I_im_1, I_im_2, I_im_3])
+            btn3.click(generate_room_inside, inputs=[room_options, I_txt, fileName, prompt], outputs=[I_im_1, I_im_2, I_im_3, prompt])
             room_options.change(viewCurrentImage, inputs = [room_options, fileName], outputs = [I_im_1, I_im_2, I_im_3])
             tab2.select(viewCurrentImage, inputs = [room_options, fileName], outputs = [I_im_1, I_im_2, I_im_3])
 
@@ -335,6 +384,19 @@ with gr.Blocks(theme='Taithrah/Minimal', css = css) as demo:
                 img_bedroom2 = gr.Image()
                 img_bedroom3 = gr.Image()
                 
+            gr.Markdown("""
+                        <div>
+                            <p style="font-size: 25px; color: blue;">Generate Your own House introduction</p>
+                        </div>
+                        """)
+            with gr.Row():
+                intro_txt   = gr.Textbox(label="Enter Your Description")
+                intro_drop  = gr.Dropdown(["EN_Speaker(Male)", "EN_Speaker(Female)", "CN_Speaker(Male)", "CN_Speaker(Female)"], value = "EN_Speaker(Male)", multiselect=False, label="Share", scale = 1)
+                intro_audio = gr.Audio(source="microphone")
+            intro_btn = gr.Button(variant="primary", value="Generate")
+            intro_btn.click(generateDescription, inputs = [prompt, fileName, intro_drop], outputs = [intro_txt, intro_audio])
+
+                
 
 
             gr.Markdown("""
@@ -364,10 +426,10 @@ with gr.Blocks(theme='Taithrah/Minimal', css = css) as demo:
             with gr.Row():
                 cb_audio  = gr.Checkbox(value = 'True', label = "audio ")
                 cb_effect = gr.Checkbox(value = 'True', label = "effect")
-            
+                cb_descri = gr.Checkbox(value = 'True', label = "description")
             final_video = gr.Video(height = 512, width = 1536)
             btn_video = gr.Button(value="Generate Your Video!")
-            btn_video.click(generateVideo, inputs = [cb_house, cb_dinning, cb_kitchen, cb_living, cb_bath, cb_bedroom1, cb_bedroom2, cb_bedroom3, cb_audio, cb_effect, fileName], outputs = [final_video])
+            btn_video.click(generateVideo, inputs = [cb_house, cb_dinning, cb_kitchen, cb_living, cb_bath, cb_bedroom1, cb_bedroom2, cb_bedroom3, cb_audio, cb_effect, cb_descri, fileName], outputs = [final_video])
         
         with gr.TabItem("Step four: Generate your unique QR code now"):
             with gr.Row():
@@ -379,7 +441,7 @@ with gr.Blocks(theme='Taithrah/Minimal', css = css) as demo:
                 QR_share  = gr.Dropdown([ "Twitter", "Facebook", "Weibo", "Reddit"], multiselect=False, label="Share", scale = 1)
                 share_btn = gr.Button(value = 'share', scale = 1, link = "https://www.google.com/")
 
-            QR_btn.click(generateQRcode, inputs = [cb_audio, cb_effect, fileName], outputs = [QR_img, QR_link, url])
+            QR_btn.click(generateQRcode, inputs = [cb_audio, cb_effect, cb_descri, fileName], outputs = [QR_img, QR_link, url])
             QR_img.change(newWebsite, inputs = [QR_share, url], outputs = [share_btn])
             QR_share.change(newWebsite, inputs = [QR_share, url], outputs = [share_btn])
 

@@ -22,7 +22,7 @@ def text2audio(prompt, filename):
     scipy.io.wavfile.write(f"{filename}/techno.wav", rate=16000, data=audio)
 
 
-def JustImage(select_list, image_list, filename):
+def JustImage(select_list, image_list, filename, description):
     selected_images = []
     for i in range(len(select_list)):
         if select_list[i] and image_list[i] is not None:
@@ -42,14 +42,19 @@ def JustImage(select_list, image_list, filename):
     upper = width * (len(selected_images) - 1)
     combined_image = cv2.cvtColor(np.array(combined_image), cv2.COLOR_RGB2BGR)
 
+    if description:
+        stop_time = 700
+    else:
+        stop_time = 0
     for i in range(0, upper, 2):
-
         frame = combined_image[:height, i:i+width]
+        if i%width == 0:
+            video = stopFrame(video, stop_time, frame)
         video.write(frame)
     
     video.release()
 
-def AddImageEffects(select_list, image_list, filename):
+def AddImageEffects(select_list, image_list, filename, description):
     selected_images = []
     for i in range(len(select_list)):
         if select_list[i] and image_list[i] is not None:
@@ -61,34 +66,43 @@ def AddImageEffects(select_list, image_list, filename):
     fourcc = cv2.VideoWriter_fourcc(*'mp4v') 
     video = cv2.VideoWriter(f'{filename}/output_with_effects.mp4', fourcc, 100.0, (width, height))
 
+    if description:
+        stop_time = 1200
+    else:
+        stop_time = 100
     random_elements = random.sample(effect_list, len(selected_images))
-    for _ in range(100):
-        video.write(selected_images[0])
+    video = stopFrame(video, stop_time, selected_images[0])
     for i in range(len(selected_images) - 1):
         if type(random_elements[i]) == str:
             video = video_background(selected_images[i], selected_images[i + 1], video, random_elements[i])
         else:
             video = random_elements[i](selected_images[i], selected_images[i + 1], video)
-        for _ in range(100):
-            video.write(selected_images[i + 1])
+        video = stopFrame(video, stop_time, selected_images[i + 1])
     
     video.release()
 
 
 
-def audio2video(video, filename):
+def audio2video(video, filename, description):
 
     audio = AudioFileClip(f"{filename}/techno.wav")
 
+    
+
     num_audio_repeats = int(video.duration / audio.duration) + 1
 
-    audio = audio.volumex(1.0)  
+    audio = audio.volumex(0.5)  
     audio_clips = [audio] * num_audio_repeats
-    final_audio = CompositeAudioClip(audio_clips)
+    
+
+
+    if description:
+        audio2 = AudioFileClip(f"{filename}/bark_out.wav")
+        final_audio = CompositeAudioClip([audio, audio2])
+    else:
+        final_audio = CompositeAudioClip(audio_clips)
 
     final_audio = final_audio.subclip(0, video.duration)
-
-
     video = video.set_audio(final_audio)
 
     video.write_videofile(f"{filename}/output_with_audio.mp4", codec="libx264", audio_codec="aac")
@@ -96,5 +110,23 @@ def audio2video(video, filename):
     video.close()
     audio.close()
 
+def speech2video(video, filename):
+
+    audio = AudioFileClip(f"{filename}/bark_out.wav")
+
+    audio = audio.volumex(5.0)  
 
 
+    video = video.set_audio(audio)
+
+    video.write_videofile(f"{filename}/output_with_speech.mp4", codec="libx264", audio_codec="aac")
+
+    video.close()
+    audio.close()
+
+
+
+def stopFrame(video, stopTime, frame):
+    for _ in range(stopTime):
+        video.write(frame)
+    return video

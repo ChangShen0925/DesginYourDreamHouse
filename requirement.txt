@@ -8,8 +8,12 @@ transformers
 accelerate
 opencv-python
 scipy
+pydub
+sounddevice
+git+https://github.com/openai/whisper.git 
 git+https://github.com/huggingface/transformers.git
-IPython
+--upgrade pexpect
+--upgrade IPython
 --upgrade torch
 --upgrade urllib3
 --upgrade idna

@@ -1,5 +1,5 @@
 import openai
-openai.api_key = "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"
+openai.api_key = ""
 
 def enhance_your_sentence(style, text, prompt):
     if len(style) == 0 or 'Other' in style:
@@ -49,7 +49,7 @@ def enhance_your_sentence3(prompt):
 
 def enhance_your_sentence4(prompt):
     
-    PROMPT = "This is the audio data read by AudioSegment.from_file by using audio.get_array_of_samples(), help me extend it to at least 1 minutes" + prompt 
+    PROMPT = prompt + ". Help me reshape the sentence and introduce to the audience in 20 words"
     messages = [{"role": "system", "content": 
             PROMPT}]
     response = openai.ChatCompletion.create(
