@@ -12,19 +12,3 @@ pydub
 sounddevice
 git+https://github.com/openai/whisper.git 
 git+https://github.com/huggingface/transformers.git
---upgrade pexpect
---upgrade IPython
---upgrade torch
---upgrade urllib3
---upgrade idna
---upgrade certifi
---upgrade pyyaml
---upgrade filelock
---upgrade decorator
---upgrade pyparsing
---upgrade cycler
---upgrade kiwisolver
---upgrade click
---upgrade six
---upgrade pyrsistent
---upgrade toolz
