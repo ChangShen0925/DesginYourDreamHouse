@@ -78,8 +78,10 @@ class AudioProcessor:
         """
         Run on a loop, recording audio and processing it.
         """
+        print('start!')
         self.start_recording()
         time.sleep(self.chunk_duration)
+        print('finish')
         self.stop_recording()
         self.process_audio()
         
@@ -123,4 +125,5 @@ class AudioProcessor:
         """
         self.stop_process = True
 
-
+b = SpeechTranscriber('english')
+print(b.transcribe_audio('record.wav')['text'])

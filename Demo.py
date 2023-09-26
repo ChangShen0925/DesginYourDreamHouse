@@ -12,8 +12,8 @@ import random
 import time
 import json
 from TTS import *
-
-
+from transformers import pipeline
+import numpy as np
 
 import os
 
@@ -28,6 +28,15 @@ from diffusers.pipeline_utils import DiffusionPipeline
 
 
 os.makedirs(os.getcwd(), exist_ok=True)
+
+transcriber = pipeline("automatic-speech-recognition", model="openai/whisper-base.en")
+
+def transcribe(audio):
+    sr, y = audio
+    y = y.astype(np.float32)
+    y /= np.max(np.abs(y))
+
+    return transcriber({"sampling_rate": sr, "raw": y})["text"]
 
 
 def clear():
@@ -301,7 +310,7 @@ with gr.Blocks(theme='Taithrah/Minimal', css = css) as demo:
         </body>
         </html>
         """)
-    with gr.Tabs(elem_classes=["hover", "select", "slient"]):
+    with gr.Tabs():
         with gr.TabItem("Step one: Design your house exterior look!"):
             with gr.Row():
                 options = gr.Dropdown(choices = ["Asian", "Gothic", "Modern", "Neoclassical", "Nordic", "Other, please specify"], value = "Asian", multiselect=False, label="Choose your House style")
@@ -316,19 +325,20 @@ with gr.Blocks(theme='Taithrah/Minimal', css = css) as demo:
 
             with gr.Row():
                 txt1 = gr.Textbox(label="Enter Your Description", lines=3)
-
+                speech_audio = gr.Audio(source="microphone")
             with gr.Row():
                 btn2 = gr.Button(variant="primary", value="Clear")
                 btn3 = gr.Button(variant="primary", value="Enhance Your Sentence?")
                 btn4 = gr.Button(variant="primary", value="Submit")
                 # video_1 = gr.Video()
-            img    =  gr.Image(height = 512, width = 1536, show_download_button = False,)
+            img    =  gr.Image(height = 512, width = 1536, show_download_button = False)
             #btn1.click(viewExample, inputs = [options], outputs = [img1, img2, img3, img4, img5])
             btn2.click(clear, inputs=[], outputs=[txt1])
             btn3.click(enhance_your_sentence, inputs = [options, txt, txt1], outputs = [txt1])
             btn4.click(generateImage, inputs=[prompt, txt1, options], outputs=[img, fileName, prompt])
             options.change(change_options, inputs = [options], outputs = [txt])
             options.change(viewExample, inputs = [options], outputs = [img1, img2, img3, img4, img5])
+            speech_audio.change(transcribe, inputs = [speech_audio], outputs = [txt1])
 
         with gr.TabItem("Step two: Plan your house's interior style") as tab2:
             room_options = gr.Dropdown([ "dinning room", "kitchen", "living room", "bathroom", "bedroom"],  value = "dinning room", multiselect=False, label="Choose your design")
