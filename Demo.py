@@ -32,12 +32,14 @@ os.makedirs(os.getcwd(), exist_ok=True)
 transcriber = pipeline("automatic-speech-recognition", model="openai/whisper-base.en")
 
 def transcribe(audio):
-    sr, y = audio
-    y = y.astype(np.float32)
-    y /= np.max(np.abs(y))
+    try:
+        sr, y = audio
+        y = y.astype(np.float32)
+        y /= np.max(np.abs(y))
 
-    return transcriber({"sampling_rate": sr, "raw": y})["text"]
-
+        return transcriber({"sampling_rate": sr, "raw": y})["text"]
+    except:
+        return None
 
 def clear():
     return None
@@ -56,18 +58,25 @@ def newWebsite(media, URL):
 
     return gr.Button.update(value = 'share', scale = 1, link = url)
 
-def generateDescription(prompts, filename, voice):
+def generateDescription(cb_house, cb_dinning, cb_kitchen, cb_living, cb_bath, cb_bedroom1, cb_bedroom2, cb_bedroom3, prompts, filename, voice):
     room_dic = json.loads(prompts)
     if filename == '':
         return None, None
-    
+    chosen_list = [cb_house, cb_dinning, cb_kitchen, cb_living, cb_bath, cb_bedroom1, cb_bedroom2, cb_bedroom3]
+    skip_list = []
+    for i in range(len(chosen_list)):
+        if not chosen_list[i]:
+            skip_list.append(i)
     description = [enhance_your_sentence4('This is the exterior look of the house, ' + room_dic['house'])]
+    index = 1
     for i in os.listdir(filename):
         if ('.png' in i and 'House' not in i) and 'qrcode.png' != i:
-            if ('1' in i or '2' in i) or '3' in i:
-                description.append(enhance_your_sentence4('And then we can hou go the next room.' + room_dic['bedroom'][int(i[-5]) - 1]))
-            else:
-                description.append(enhance_your_sentence4('And then we can hou go the next room.' + room_dic[i[0:-4]]))
+            if index not in skip_list:
+                if ('1' in i or '2' in i) or '3' in i:
+                    description.append(enhance_your_sentence4('And then we can hou go the next room.' + room_dic['bedroom'][int(i[-5]) - 1]))
+                else:
+                    description.append(enhance_your_sentence4('And then we can hou go the next room.' + room_dic[i[0:-4]]))
+            index+=1
     
     description[-1]+="This is the end of the house"
 
@@ -342,7 +351,9 @@ with gr.Blocks(theme='Taithrah/Minimal', css = css) as demo:
 
         with gr.TabItem("Step two: Plan your house's interior style") as tab2:
             room_options = gr.Dropdown([ "dinning room", "kitchen", "living room", "bathroom", "bedroom"],  value = "dinning room", multiselect=False, label="Choose your design")
-            I_txt = gr.Textbox(label="Enter Your Description", line = 3)
+            with gr.Row():
+                I_txt = gr.Textbox(label="Enter Your Description", line = 3)
+                I_audio = gr.Audio(source="microphone")
             with gr.Row():
                 btn1 = gr.Button(variant="primary", value="Clear")
                 btn2 = gr.Button(variant="primary", value="Enhance Your Sentence?")
@@ -350,12 +361,12 @@ with gr.Blocks(theme='Taithrah/Minimal', css = css) as demo:
             
 
             with gr.Row():
-                I_im_1 = gr.Image(show_download_button = False)
+                I_im_1 = gr.Image(height = 512, width = 1536, show_download_button = False)
                 I_im_2 = gr.Image(show_download_button = False, visible = False)
                 I_im_3 = gr.Image(show_download_button = False, visible = False)
 
 
-            
+            I_audio.change(transcribe, inputs = [I_audio], outputs = [I_txt])
             btn1.click(clear, inputs=[], outputs=[I_txt])
             btn2.click(enhance_your_sentence2, inputs = [room_options, I_txt], outputs = [I_txt])
             btn3.click(generate_room_inside, inputs=[room_options, I_txt, fileName, prompt], outputs=[I_im_1, I_im_2, I_im_3, prompt])
@@ -404,7 +415,7 @@ with gr.Blocks(theme='Taithrah/Minimal', css = css) as demo:
                 intro_drop  = gr.Dropdown(["EN_Speaker(Male)", "EN_Speaker(Female)", "CN_Speaker(Male)", "CN_Speaker(Female)"], value = "EN_Speaker(Male)", multiselect=False, label="Share", scale = 1)
                 intro_audio = gr.Audio(source="microphone")
             intro_btn = gr.Button(variant="primary", value="Generate")
-            intro_btn.click(generateDescription, inputs = [prompt, fileName, intro_drop], outputs = [intro_txt, intro_audio])
+            intro_btn.click(generateDescription, inputs = [cb_house, cb_dinning, cb_kitchen, cb_living, cb_bath, cb_bedroom1, cb_bedroom2, cb_bedroom3, prompt, fileName, intro_drop], outputs = [intro_txt, intro_audio])
 
                 
 
