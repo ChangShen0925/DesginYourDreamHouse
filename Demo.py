@@ -277,29 +277,35 @@ def generate_room_inside(cata, other, filename, PROMPT):
 
 css="""
     .select button.selected{
-        background-color: #4CAF50;
+        background-color: #FF7712;
+        width: 25%;
         font-size: 17px !important;
-        width: 374px;
-        margin: 0px 1px;
+        color: white;
+
     }
-    .hover button:hover{
-        background-color: #FFFFFF;
-        font-size: 17px !important;
-        color: black;
-        transition: all 1s ease;
-        width: 374px;
-        margin: 0px 1px;
-    }
+ 
     .slient button{
-        background-color: #8aedd3;
+        background-color: ##F4F6FA;
+        width: 25%;
         font-size: 17px !important;
         color: black;
-        width: 374px;
-        margin: 0px 1px;
     }
     """
 
-with gr.Blocks(theme='Taithrah/Minimal', css = css) as demo:
+with gr.Blocks(css = css) as demo:
+    
+    gr.HTML(f"""
+                <html>
+                <head>
+                </head>
+                <body>
+                <img class="top-left-image" src="https://www.yephome.com.au/assets/image/logo/Yep-logo-white-home.svg" alt="Your Image" style= "width: 219px; height: 33px;">   
+
+                </body>
+                </html>
+                """)
+
+    
     fileName = gr.Textbox(visible=False)
     prompt = gr.Textbox(value = '{"house": null, "living room": null, "kitchen": null, "dining room": null, "bathroom": null, "bedroom": [null, null, null, null]}',visible=False)
     url = gr.Textbox(visible=False)
@@ -315,12 +321,12 @@ with gr.Blocks(theme='Taithrah/Minimal', css = css) as demo:
         </head>
         <body>
 
-        <p style="font-size: 50px; text-align: center; color: blue;">Design Your Dream House!</p>
+        <p style="font-size: 50px; text-align: center; color: black;">Design Your Dream House!</p>
         </body>
         </html>
         """)
-    with gr.Tabs():
-        with gr.TabItem("Step one: Design your house exterior look!"):
+    with gr.Tabs(elem_classes=['select', 'slient']):
+        with gr.TabItem("Exterior"):
             with gr.Row():
                 options = gr.Dropdown(choices = ["Asian", "Gothic", "Modern", "Neoclassical", "Nordic", "Other, please specify"], value = "Asian", multiselect=False, label="Choose your House style")
                 txt     = gr.Textbox(label="House Style", visible=False)
@@ -336,9 +342,13 @@ with gr.Blocks(theme='Taithrah/Minimal', css = css) as demo:
                 txt1 = gr.Textbox(label="Enter Your Description", lines=3)
                 speech_audio = gr.Audio(source="microphone")
             with gr.Row():
-                btn2 = gr.Button(variant="primary", value="Clear")
-                btn3 = gr.Button(variant="primary", value="Enhance Your Sentence?")
-                btn4 = gr.Button(variant="primary", value="Submit")
+                gr.Markdown("                                          ")
+                gr.Markdown("                                          ")
+                gr.Markdown("                                          ")
+                gr.Markdown("                                          ")
+                btn2 = gr.Button(value="Clear", scale = 1)
+                btn3 = gr.Button(value="Enhance Your Sentence?", scale = 2)
+                btn4 = gr.Button(variant="primary", value="Submit", scale = 2)
                 # video_1 = gr.Video()
             img    =  gr.Image(height = 512, width = 1536, show_download_button = False)
             #btn1.click(viewExample, inputs = [options], outputs = [img1, img2, img3, img4, img5])
@@ -349,15 +359,19 @@ with gr.Blocks(theme='Taithrah/Minimal', css = css) as demo:
             options.change(viewExample, inputs = [options], outputs = [img1, img2, img3, img4, img5])
             speech_audio.change(transcribe, inputs = [speech_audio], outputs = [txt1])
 
-        with gr.TabItem("Step two: Plan your house's interior style") as tab2:
+        with gr.TabItem("Interior") as tab2:
             room_options = gr.Dropdown([ "dinning room", "kitchen", "living room", "bathroom", "bedroom"],  value = "dinning room", multiselect=False, label="Choose your design")
             with gr.Row():
                 I_txt = gr.Textbox(label="Enter Your Description", line = 3)
                 I_audio = gr.Audio(source="microphone")
             with gr.Row():
-                btn1 = gr.Button(variant="primary", value="Clear")
-                btn2 = gr.Button(variant="primary", value="Enhance Your Sentence?")
-                btn3 = gr.Button(variant="primary", value="Submit")
+                gr.Markdown("                                          ")
+                gr.Markdown("                                          ")
+                gr.Markdown("                                          ")
+                gr.Markdown("                                          ")
+                btn1 = gr.Button(value="Clear", scale = 1)
+                btn2 = gr.Button(value="Enhance Your Sentence?", scale = 2)
+                btn3 = gr.Button(variant="primary", value="Submit", scale = 2)
             
 
             with gr.Row():
@@ -373,10 +387,10 @@ with gr.Blocks(theme='Taithrah/Minimal', css = css) as demo:
             room_options.change(viewCurrentImage, inputs = [room_options, fileName], outputs = [I_im_1, I_im_2, I_im_3])
             tab2.select(viewCurrentImage, inputs = [room_options, fileName], outputs = [I_im_1, I_im_2, I_im_3])
 
-        with gr.TabItem("Step three: Create your audio-visual effects") as tab3:
+        with gr.TabItem("Audio") as tab3:
             gr.Markdown("""
                         <div>
-                            <p style="font-size: 25px; color: blue;">View All your current Designs!</p>
+                            <p style="font-size: 25px; color: black;">View All your current Designs!</p>
                         </div>
                         """)
             with gr.Row():
@@ -407,7 +421,7 @@ with gr.Blocks(theme='Taithrah/Minimal', css = css) as demo:
                 
             gr.Markdown("""
                         <div>
-                            <p style="font-size: 25px; color: blue;">Generate Your own House introduction</p>
+                            <p style="font-size: 25px; color: black;">Generate Your own House introduction</p>
                         </div>
                         """)
             with gr.Row():
@@ -422,7 +436,7 @@ with gr.Blocks(theme='Taithrah/Minimal', css = css) as demo:
 
             gr.Markdown("""
                         <div>
-                            <p style="font-size: 25px; color: blue;">Design Your own Music!</p>
+                            <p style="font-size: 25px; color: black;">Design Your own Music!</p>
                         </div>
                         """)
             with gr.Row():
@@ -440,7 +454,7 @@ with gr.Blocks(theme='Taithrah/Minimal', css = css) as demo:
 
             gr.Markdown("""
                         <div>
-                            <p style="font-size: 25px; color: blue;">Generate the Video!</p>
+                            <p style="font-size: 25px; color: black;">Generate the Video!</p>
                         </div>
                         """)
             
@@ -452,7 +466,7 @@ with gr.Blocks(theme='Taithrah/Minimal', css = css) as demo:
             btn_video = gr.Button(value="Generate Your Video!")
             btn_video.click(generateVideo, inputs = [cb_house, cb_dinning, cb_kitchen, cb_living, cb_bath, cb_bedroom1, cb_bedroom2, cb_bedroom3, cb_audio, cb_effect, cb_descri, fileName], outputs = [final_video])
         
-        with gr.TabItem("Step four: Generate your unique QR code now"):
+        with gr.TabItem("Generate"):
             with gr.Row():
                 QR_btn = gr.Button(value = 'Generate Your QR code!')
             
