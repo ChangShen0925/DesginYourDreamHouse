@@ -112,7 +112,84 @@ def generateQRcode(audio, effect, description, filename, request: gr.Request):
     qr_code = qr.make_image(fill_color="black", back_color="white")
     qr_code.save(f'{filename}/qrcode.png')
 
-    return Image.open(f'{filename}/qrcode.png'), url, url
+    
+
+    twitter_url  = f"https://twitter.com/intent/tweet?url={url}"
+    facebook_url = f"https://www.facebook.com/sharer/sharer.php?u={url}"
+    weibo_url    = f"http://service.weibo.com/share/share.php?url={url}"
+    reddit_url   = f"https://reddit.com/submit?url={url}"
+
+    return Image.open(f'{filename}/qrcode.png'), gr.HTML.update(f"""
+                              <html>
+                              <head>
+                              <style>
+                              .center {{
+                                display: block;
+                                margin-left: auto;
+                                margin-right: auto;
+                              }}
+                              </style>
+                              </head>
+                              <body>
+                              <a href="{facebook_url}">
+                                <img src="https://cdn3.iconfinder.com/data/icons/picons-social/57/46-facebook-1024.png" class="center" style="width: 50px; height: 50px">
+                              </a>
+                              </body>
+                              </html>
+                              """), gr.HTML.update(f"""
+                              <html>
+                              <head>
+                              <style>
+                              .center {{
+                                display: block;
+                                margin-left: auto;
+                                margin-right: auto;
+                              }}
+                              </style>
+                              </head>
+                              <body>
+                              <a href="{reddit_url}">
+                                <img src="https://static-00.iconduck.com/assets.00/reddit-logo-icon-2048x2048-vtzhwa71.png" class="center" style="width: 50px; height: 50px">
+                              </a>
+                              </body>
+                              </html>
+                              """), gr.HTML.update(f"""
+                              <html>
+                              <head>
+                              <style>
+                              .center {{
+                                display: block;
+                                margin-left: auto;
+                                margin-right: auto;
+                              }}
+                              </style>
+                              </head>
+                              <body>
+                              <a href="{weibo_url}">
+                                <img src="https://cdn.freebiesupply.com/images/large/2x/weibo-logo-black-transparent.png" class="center" style="width: 50px; height: 50px">
+                              </a>
+                              </body>
+                              </html>
+                              """), gr.HTML.update(f"""
+                              <html>
+                              <head>
+                              <style>
+                              .center {{
+                                display: block;
+                                margin-left: auto;
+                                margin-right: auto;
+                              }}
+                              </style>
+                              </head>
+                              <body>
+                              <a href="{twitter_url}">
+                                <img src="https://cdn3.iconfinder.com/data/icons/picons-social/57/43-twitter-1024.png" class="center" style="width: 50px; height: 50px">
+                              </a>
+                              </body>
+                              </html>
+                              """)
+
+
 
 
 def viewAllimages(filename):
@@ -419,6 +496,28 @@ with gr.Blocks(css = css) as demo:
                 img_bedroom2 = gr.Image(show_download_button = False)
                 img_bedroom3 = gr.Image(show_download_button = False)
                 
+                        
+            gr.Markdown("""
+                        <div>
+                            <p style="font-size: 25px; color: black;">Design Your own Music!</p>
+                        </div>
+                        """)
+            with gr.Row():
+                txt   = gr.Textbox(label="Enter Your Description")
+            with gr.Row():
+                audio = gr.Audio(source="microphone", scale = 6)
+                btn1 = gr.Button(value="Clear", scale = 1)
+                btn2 = gr.Button( value="Enhance Your Sentence?", scale = 2)
+                btn3 = gr.Button(variant="primary", value="Submit", scale = 2)
+
+            btn1.click(clear, inputs=[], outputs=[txt])
+            btn2.click(enhance_your_sentence3, inputs = [txt], outputs = [txt])
+            btn3.click(generate_audio, inputs=[txt, fileName], outputs=[audio])
+            tab3.select(viewAllimages, inputs = [fileName], outputs = [img_house, img_dinning, img_kitchen, img_living, img_bath, img_bedroom1, img_bedroom2, img_bedroom3])
+
+            
+        
+        with gr.TabItem("Generate"):
             gr.Markdown("""
                         <div>
                             <p style="font-size: 25px; color: black;">Generate Your own House introduction</p>
@@ -431,26 +530,7 @@ with gr.Blocks(css = css) as demo:
             intro_btn = gr.Button(variant="primary", value="Generate")
             intro_btn.click(generateDescription, inputs = [cb_house, cb_dinning, cb_kitchen, cb_living, cb_bath, cb_bedroom1, cb_bedroom2, cb_bedroom3, prompt, fileName, intro_drop], outputs = [intro_txt, intro_audio])
 
-                
 
-
-            gr.Markdown("""
-                        <div>
-                            <p style="font-size: 25px; color: black;">Design Your own Music!</p>
-                        </div>
-                        """)
-            with gr.Row():
-                txt   = gr.Textbox(label="Enter Your Description")
-                audio = gr.Audio(source="microphone")
-            with gr.Row():
-                btn1 = gr.Button(variant="primary", value="Clear")
-                btn2 = gr.Button(variant="primary", value="Enhance Your Sentence?")
-                btn3 = gr.Button(variant="primary", value="Submit")
-
-            btn1.click(clear, inputs=[], outputs=[txt])
-            btn2.click(enhance_your_sentence3, inputs = [txt], outputs = [txt])
-            btn3.click(generate_audio, inputs=[txt, fileName], outputs=[audio])
-            tab3.select(viewAllimages, inputs = [fileName], outputs = [img_house, img_dinning, img_kitchen, img_living, img_bath, img_bedroom1, img_bedroom2, img_bedroom3])
 
             gr.Markdown("""
                         <div>
@@ -459,26 +539,128 @@ with gr.Blocks(css = css) as demo:
                         """)
             
             with gr.Row():
-                cb_audio  = gr.Checkbox(value = 'True', label = "audio ")
-                cb_effect = gr.Checkbox(value = 'True', label = "effect")
-                cb_descri = gr.Checkbox(value = 'True', label = "description")
-            final_video = gr.Video(height = 512, width = 1536, show_download_button = False,)
-            btn_video = gr.Button(value="Generate Your Video!")
-            btn_video.click(generateVideo, inputs = [cb_house, cb_dinning, cb_kitchen, cb_living, cb_bath, cb_bedroom1, cb_bedroom2, cb_bedroom3, cb_audio, cb_effect, cb_descri, fileName], outputs = [final_video])
-        
-        with gr.TabItem("Generate"):
-            with gr.Row():
-                QR_btn = gr.Button(value = 'Generate Your QR code!')
-            
-            QR_img  = gr.Image(height = 512, width = 1536, container = False, show_download_button = False,)
-            with gr.Row():
-                QR_link   = gr.Textbox(label = 'Copy your link', show_copy_button = True, scale = 10)
-                QR_share  = gr.Dropdown([ "Twitter", "Facebook", "Weibo", "Reddit"], multiselect=False, label="Share", scale = 1)
-                share_btn = gr.Button(value = 'share', scale = 1, link = "https://www.google.com/")
+                with gr.Row():
+                    cb_audio  = gr.Checkbox(value = 'True', label = "audio ")
+                    cb_effect = gr.Checkbox(value = 'True', label = "effect")
+                    cb_descri = gr.Checkbox(value = 'True', label = "description")
 
-            QR_btn.click(generateQRcode, inputs = [cb_audio, cb_effect, cb_descri, fileName], outputs = [QR_img, QR_link, url])
-            QR_img.change(newWebsite, inputs = [QR_share, url], outputs = [share_btn])
-            QR_share.change(newWebsite, inputs = [QR_share, url], outputs = [share_btn])
+                
+                btn_video = gr.Button(value="Generate Your Video!")
+                share_video_btn = gr.Button(value="Generate QR code")
+                with gr.Row():
+                    final_video = gr.Video(height = 512, width = 1536, show_download_button = False)
+                    with gr.Column(visible=False) as share_page:
+                        gr.Markdown("""
+                                <html>
+                                <head>
+                                <style>
+                                    .centered-text {
+                                    text-align: center;
+                                    font-weight: bold;
+                                    }
+                                </style>
+                                </head>
+                                <body>
+
+                                <p style="font-size: 20px; text-align: center; color: black;">Share your work!</p>
+                                </body>
+                                </html>
+                                """)
+                        QR_img  = gr.Image(height = 512, width = 1536, container = False, show_download_button = False)
+                        with gr.Row():
+                            gr.Markdown("            ")
+                            facebook = gr.HTML("""
+                                        <html>
+                                        <head>
+                                        <style>
+                                        .center {
+                                            display: block;
+                                            margin-left: auto;
+                                            margin-right: auto;
+                                        }
+                                        </style>
+                                        </head>
+                                        <body>
+                                        <img src="https://cdn3.iconfinder.com/data/icons/picons-social/57/46-facebook-1024.png" class="center" style= "width: 50px; height: 50px">
+                    
+                                        </body>
+                                        </html>
+                                        """)
+                            gr.Markdown("            ")
+                            reddit = gr.HTML("""
+                                        <html>
+                                        <head>
+                                        <style>
+                                        .center {
+                                        display: block;
+                                        margin-left: auto;
+                                        margin-right: auto;
+                                        }
+                                        </style>
+                                        </head>
+                                        <body>
+                                        <img src="https://static-00.iconduck.com/assets.00/reddit-logo-icon-2048x2048-vtzhwa71.png" class="center" style= "width: 50px; height: 50px">
+                                        </body>
+                                        </html>
+                                        """)
+                            gr.Markdown("            ")
+                            weibo = gr.HTML("""
+                                        <html>
+                                        <head>
+                                        <style>
+                                        .center {
+                                        display: block;
+                                        margin-left: auto;
+                                        margin-right: auto;
+                                        }
+                                        </style>
+                                        </head>
+                                        <body>
+                                        <img src="https://cdn.freebiesupply.com/images/large/2x/weibo-logo-black-transparent.png" class="center" style= "width: 50px; height: 50px">
+                                        </body>
+                                        </html>
+                                        """)
+                            gr.Markdown("            ")
+                            twitter = gr.HTML("""
+                                        <html>
+                                        <head>
+                                        <style>
+                                        .center {
+                                        display: block;
+                                        margin-left: auto;
+                                        margin-right: auto;
+                                        }
+                                        </style>
+                                        </head>
+                                        <body>
+                                        <img src="https://cdn3.iconfinder.com/data/icons/picons-social/57/43-twitter-1024.png" class="center" style= "width: 50px; height: 50px">
+                                        </body>
+                                        </html>
+                                        """)
+                            gr.Markdown("            ")
+                            gr.Markdown("""
+                                    <html>
+                                    <head>
+                                    <style>
+                                        .centered-text {
+                                        text-align: center;
+                                        font-weight: bold;
+                                        }
+                                    </style>
+                                    </head>
+                                    <body>
+
+                                    <p style="font-size: 15px; color: black;">Or copy the link</p>
+                                    </body>
+                                    </html>
+                                    """)
+                        copy_page = gr.Textbox(value = "www.google.com", label = "", show_copy_button = True)
+
+
+            btn_video.click(generateVideo, inputs = [cb_house, cb_dinning, cb_kitchen, cb_living, cb_bath, cb_bedroom1, cb_bedroom2, cb_bedroom3, cb_audio, cb_effect, cb_descri, fileName], outputs = [final_video])
+
+            share_video_btn.click(generateQRcode, inputs = [cb_audio, cb_effect, cb_descri, fileName], outputs = [QR_img, facebook, reddit, weibo, twitter])
+    
 
     
 if __name__ == "__main__":
