@@ -131,7 +131,7 @@ def generateQRcode(audio, effect, description, filename, request: gr.Request):
                               </style>
                               </head>
                               <body>
-                              <a href="{facebook_url}">
+                              <a href="{facebook_url}" target="_blank">
                                 <img src="https://cdn3.iconfinder.com/data/icons/picons-social/57/46-facebook-1024.png" class="center" style="width: 50px; height: 50px">
                               </a>
                               </body>
@@ -148,7 +148,7 @@ def generateQRcode(audio, effect, description, filename, request: gr.Request):
                               </style>
                               </head>
                               <body>
-                              <a href="{reddit_url}">
+                              <a href="{reddit_url}" target="_blank">
                                 <img src="https://static-00.iconduck.com/assets.00/reddit-logo-icon-2048x2048-vtzhwa71.png" class="center" style="width: 50px; height: 50px">
                               </a>
                               </body>
@@ -165,7 +165,7 @@ def generateQRcode(audio, effect, description, filename, request: gr.Request):
                               </style>
                               </head>
                               <body>
-                              <a href="{weibo_url}">
+                              <a href="{weibo_url}" target="_blank">
                                 <img src="https://cdn.freebiesupply.com/images/large/2x/weibo-logo-black-transparent.png" class="center" style="width: 50px; height: 50px">
                               </a>
                               </body>
@@ -182,12 +182,12 @@ def generateQRcode(audio, effect, description, filename, request: gr.Request):
                               </style>
                               </head>
                               <body>
-                              <a href="{twitter_url}">
+                              <a href="{twitter_url}" target="_blank">
                                 <img src="https://cdn3.iconfinder.com/data/icons/picons-social/57/43-twitter-1024.png" class="center" style="width: 50px; height: 50px">
                               </a>
                               </body>
                               </html>
-                              """)
+                              """), gr.Column.update(visible=True), gr.Textbox.update(url), gr.Video.update(visible = False)
 
 
 
@@ -207,22 +207,26 @@ def viewAllimages(filename):
 
 def generateVideo(cb1, cb2, cb3, cb4, cb5, cb6, cb7, cb8, audio, effect, description, filename):
     if filename == '':
-        return None
+        return None, gr.Video.update(visible = False)
+    if 'techno.wav' not in os.listdir(filename):
+        audio = False
+    if 'bark_out.wav' not in os.listdir(filename):
+        description = False
     if effect:
         AddImageEffects([cb1, cb2, cb3, cb4, cb5, cb6, cb7, cb8], viewAllimages(filename), filename, description)
         if description:
             speech2video(VideoFileClip(f"{filename}/output_with_effects.mp4"), filename)
             if audio:
                 audio2video(VideoFileClip(f"{filename}/output_with_speech.mp4"), filename, description)
-                return os.getcwd() + f"/{filename}/output_with_audio.mp4"
+                return os.getcwd() + f"/{filename}/output_with_audio.mp4", gr.Video.update(visible = False)
             else:
-                return os.getcwd() + f"/{filename}/output_with_speech.mp4"
+                return os.getcwd() + f"/{filename}/output_with_speech.mp4", gr.Video.update(visible = False)
         else:
             if audio:
                 audio2video(VideoFileClip(f"{filename}/output_with_effects.mp4"), filename, description)
-                return os.getcwd() + f"/{filename}/output_with_audio.mp4"
+                return os.getcwd() + f"/{filename}/output_with_audio.mp4", gr.Video.update(visible = False)
             else:
-                return os.getcwd() + f"/{filename}/output_with_effects.mp4"
+                return os.getcwd() + f"/{filename}/output_with_effects.mp4", gr.Video.update(visible = False)
             
     else:
         JustImage([cb1, cb2, cb3, cb4, cb5, cb6, cb7, cb8], viewAllimages(filename), filename, description)
@@ -230,15 +234,15 @@ def generateVideo(cb1, cb2, cb3, cb4, cb5, cb6, cb7, cb8, audio, effect, descrip
             speech2video(VideoFileClip(f"{filename}/output.mp4"), filename)
             if audio:
                 audio2video(VideoFileClip(f"{filename}/output_with_speech.mp4"), filename, description)
-                return os.getcwd() + f"/{filename}/output_with_audio.mp4"
+                return os.getcwd() + f"/{filename}/output_with_audio.mp4", gr.Video.update(visible = False)
             else:
-                return os.getcwd() + f"/{filename}/output_with_speech.mp4"
+                return os.getcwd() + f"/{filename}/output_with_speech.mp4", gr.Video.update(visible = False)
         else:
             if audio:
                 audio2video(VideoFileClip(f"{filename}/output.mp4"), filename, description)
-                return os.getcwd() + f"/{filename}/output_with_audio.mp4"
+                return os.getcwd() + f"/{filename}/output_with_audio.mp4", gr.Video.update(visible = False)
             else:
-                return os.getcwd() + f"/{filename}/output.mp4"
+                return os.getcwd() + f"/{filename}/output.mp4", gr.Video.update(visible = False)
 
     
 
@@ -353,6 +357,15 @@ def generate_room_inside(cata, other, filename, PROMPT):
 
 
 css="""
+    #image_background {background-color: #000000}
+
+    #button_submit {background: #FF7712; color: #FFFFFF !important;} 
+    #button_other {border-color: #FF7712; color: #FF7712; background: #FFFFFF;} 
+
+    #audio_button_submit {background: #FF7712; color: #FFFFFF !important; height: 40px;}
+    #audio_button_other {border-color: #FF7712; color: #FF7712; background: #FFFFFF; height: 40px;} 
+    #audio_id {height: 34px;}
+
     .select button.selected{
         background-color: #FF7712;
         width: 25%;
@@ -367,22 +380,47 @@ css="""
         font-size: 17px !important;
         color: black;
     }
+    .select2 button.selected{
+        background-color: #FF7712;
+        width: 50%;
+        font-size: 17px !important;
+        color: white;
+
+    }
+
+    .slient2 button{
+        background-color: ##F4F6FA;
+        width: 50%;
+        font-size: 17px !important;
+        color: black;
+    }
     """
 
 with gr.Blocks(css = css) as demo:
     
-    gr.HTML(f"""
-                <html>
-                <head>
-                </head>
-                <body>
-                <img class="top-left-image" src="https://www.yephome.com.au/assets/image/logo/Yep-logo-white-home.svg" alt="Your Image" style= "width: 219px; height: 33px;">   
+    gr.HTML("""
+            <html>
+            <head>
+            <style>
+            .container {
+                position: relative;
+            }
 
-                </body>
-                </html>
-                """)
-
-    
+            .top-left-image {
+                position: absolute;
+                top: 11px;
+                left: 11px;
+            }
+            </style>
+            </head>
+            <body>
+            <div class="container">
+            <img src="https://raw.githubusercontent.com/ChangShen0925/DesignYourDreamHouse/main/Rectangle.png" alt="Your Image" style="width: 1512px; height: 47px;">
+            <img class="top-left-image" src="https://raw.githubusercontent.com/ChangShen0925/DesignYourDreamHouse/main/logo.png" alt="Your Image" style="width: 120px; height: 20px;">
+            </div>
+            </body>
+            </html>
+            """)
     fileName = gr.Textbox(visible=False)
     prompt = gr.Textbox(value = '{"house": null, "living room": null, "kitchen": null, "dining room": null, "bathroom": null, "bedroom": [null, null, null, null]}',visible=False)
     url = gr.Textbox(visible=False)
@@ -397,8 +435,7 @@ with gr.Blocks(css = css) as demo:
         </style>
         </head>
         <body>
-
-        <p style="font-size: 50px; text-align: center; color: black;">Design Your Dream House!</p>
+        <div style="width: 100%; text-align: center; color: black; font-size: 42px; font-family: Roboto Flex; font-weight: 800; line-height: 59.09px; word-wrap: break-word">Design your Dream House</div>
         </body>
         </html>
         """)
@@ -408,13 +445,44 @@ with gr.Blocks(css = css) as demo:
                 options = gr.Dropdown(choices = ["Asian", "Gothic", "Modern", "Neoclassical", "Nordic", "Other, please specify"], value = "Asian", multiselect=False, label="Choose your House style")
                 txt     = gr.Textbox(label="House Style", visible=False)
             #btn1 = gr.Button(value="View Some example!")
-            with gr.Row():
-                img1    =  gr.Image(value = Image.open(os.getcwd() + '/HouseStyle/Asain/Asain1.png'), show_download_button = False, label = "Preview 1")
-                img2    =  gr.Image(value = Image.open(os.getcwd() + '/HouseStyle/Asain/Asain2.png'), show_download_button = False, label = "Preview 2")
-                img3    =  gr.Image(value = Image.open(os.getcwd() + '/HouseStyle/Asain/Asain3.png'), show_download_button = False, label = "Preview 3")
-                img4    =  gr.Image(value = Image.open(os.getcwd() + '/HouseStyle/Asain/Asain4.png'), show_download_button = False, label = "Preview 4")
-                img5    =  gr.Image(value = Image.open(os.getcwd() + '/HouseStyle/Asain/Asain5.png'), show_download_button = False, label = "Preview 5")
-
+            with gr.Column(elem_id = "image_background"):
+                gr.Markdown("""
+                                <html>
+                                <head>
+                                <style>
+                                    .centered-text {
+                                    text-align: center;
+                                    font-weight: bold;
+                                    }
+                                </style>
+                                </head>
+                                <body>
+                                <div style="width: 100%; color: black; font-size: 10px; font-family: Roboto Flex; font-weight: 800; line-height: 10px; word-wrap: break-word">Design your Dream House</div>
+                                </body>
+                                </html>
+                                """)
+                with gr.Row():
+                    
+                    img1    =  gr.Image(value = Image.open(os.getcwd() + '/HouseStyle/Asain/Asain1.png'), show_download_button = False, label = "Preview 1")
+                    img2    =  gr.Image(value = Image.open(os.getcwd() + '/HouseStyle/Asain/Asain2.png'), show_download_button = False, label = "Preview 2")
+                    img3    =  gr.Image(value = Image.open(os.getcwd() + '/HouseStyle/Asain/Asain3.png'), show_download_button = False, label = "Preview 3")
+                    img4    =  gr.Image(value = Image.open(os.getcwd() + '/HouseStyle/Asain/Asain4.png'), show_download_button = False, label = "Preview 4")
+                    img5    =  gr.Image(value = Image.open(os.getcwd() + '/HouseStyle/Asain/Asain5.png'), show_download_button = False, label = "Preview 5")
+                gr.Markdown("""
+                            <html>
+                            <head>
+                            <style>
+                                .centered-text {
+                                text-align: center;
+                                font-weight: bold;
+                                }
+                            </style>
+                            </head>
+                            <body>
+                            <div style="width: 100%; text-align: center; color: black; font-size: 10px; font-family: Roboto Flex; font-weight: 800; line-height: 10px; word-wrap: break-word">Design your Dream House</div>
+                            </body>
+                            </html>
+                            """)
             with gr.Row():
                 txt1 = gr.Textbox(label="Enter Your Description", lines=3)
                 speech_audio = gr.Audio(source="microphone")
@@ -423,9 +491,9 @@ with gr.Blocks(css = css) as demo:
                 gr.Markdown("                                          ")
                 gr.Markdown("                                          ")
                 gr.Markdown("                                          ")
-                btn2 = gr.Button(value="Clear", scale = 1)
-                btn3 = gr.Button(value="Enhance Your Sentence?", scale = 2)
-                btn4 = gr.Button(variant="primary", value="Submit", scale = 2)
+                btn2 = gr.Button(value="Clear", scale = 1, elem_id = "button_other")
+                btn3 = gr.Button(value="Enhance Your Sentence?", scale = 2, elem_id = "button_other")
+                btn4 = gr.Button(value="Submit", scale = 2, elem_id = "button_submit")
                 # video_1 = gr.Video()
             img    =  gr.Image(height = 512, width = 1536, show_download_button = False)
             #btn1.click(viewExample, inputs = [options], outputs = [img1, img2, img3, img4, img5])
@@ -446,9 +514,9 @@ with gr.Blocks(css = css) as demo:
                 gr.Markdown("                                          ")
                 gr.Markdown("                                          ")
                 gr.Markdown("                                          ")
-                btn1 = gr.Button(value="Clear", scale = 1)
-                btn2 = gr.Button(value="Enhance Your Sentence?", scale = 2)
-                btn3 = gr.Button(variant="primary", value="Submit", scale = 2)
+                btn1 = gr.Button(value="Clear", scale = 1, elem_id = "button_other")
+                btn2 = gr.Button(value="Enhance Your Sentence?", scale = 2, elem_id = "button_other")
+                btn3 = gr.Button(variant="primary", value="Submit", scale = 2, elem_id = "button_submit")
             
 
             with gr.Row():
@@ -505,10 +573,10 @@ with gr.Blocks(css = css) as demo:
             with gr.Row():
                 txt   = gr.Textbox(label="Enter Your Description")
             with gr.Row():
-                audio = gr.Audio(source="microphone", scale = 6)
-                btn1 = gr.Button(value="Clear", scale = 1)
-                btn2 = gr.Button( value="Enhance Your Sentence?", scale = 2)
-                btn3 = gr.Button(variant="primary", value="Submit", scale = 2)
+                audio = gr.Audio(source="microphone", container = False, scale = 6, elem_id = "audio_id")
+                btn1 = gr.Button(value="Clear", scale = 1, elem_id = "audio_button_other")
+                btn2 = gr.Button( value="Enhance Your Sentence?", scale = 2, elem_id = "audio_button_other")
+                btn3 = gr.Button(variant="primary", value="Submit", scale = 2, elem_id = "audio_button_submit")
 
             btn1.click(clear, inputs=[], outputs=[txt])
             btn2.click(enhance_your_sentence3, inputs = [txt], outputs = [txt])
@@ -523,11 +591,12 @@ with gr.Blocks(css = css) as demo:
                             <p style="font-size: 25px; color: black;">Generate Your own House introduction</p>
                         </div>
                         """)
+            
+            intro_txt   = gr.Textbox(label="Enter Your Description")
+            intro_drop  = gr.Dropdown(["EN_Speaker(Male)", "EN_Speaker(Female)", "CN_Speaker(Male)", "CN_Speaker(Female)"], value = "EN_Speaker(Male)", multiselect=False, label="Share", scale = 1)
             with gr.Row():
-                intro_txt   = gr.Textbox(label="Enter Your Description")
-                intro_drop  = gr.Dropdown(["EN_Speaker(Male)", "EN_Speaker(Female)", "CN_Speaker(Male)", "CN_Speaker(Female)"], value = "EN_Speaker(Male)", multiselect=False, label="Share", scale = 1)
-                intro_audio = gr.Audio(source="microphone")
-            intro_btn = gr.Button(variant="primary", value="Generate")
+                intro_audio = gr.Audio(source="microphone", container = False, elem_id = "audio_id")
+                intro_btn = gr.Button(value="Generate", elem_id = "audio_button_submit")
             intro_btn.click(generateDescription, inputs = [cb_house, cb_dinning, cb_kitchen, cb_living, cb_bath, cb_bedroom1, cb_bedroom2, cb_bedroom3, prompt, fileName, intro_drop], outputs = [intro_txt, intro_audio])
 
 
@@ -538,18 +607,20 @@ with gr.Blocks(css = css) as demo:
                         </div>
                         """)
             
+            
             with gr.Row():
-                with gr.Row():
-                    cb_audio  = gr.Checkbox(value = 'True', label = "audio ")
-                    cb_effect = gr.Checkbox(value = 'True', label = "effect")
-                    cb_descri = gr.Checkbox(value = 'True', label = "description")
+                cb_audio  = gr.Checkbox(value = 'True', label = "audio ")
+                cb_effect = gr.Checkbox(value = 'True', label = "effect")
+                cb_descri = gr.Checkbox(value = 'True', label = "description")
 
-                
-                btn_video = gr.Button(value="Generate Your Video!")
-                share_video_btn = gr.Button(value="Generate QR code")
-                with gr.Row():
-                    final_video = gr.Video(height = 512, width = 1536, show_download_button = False)
-                    with gr.Column(visible=False) as share_page:
+            with gr.Row():
+                btn_video = gr.Button(value="Generate Your Video!", elem_id = "button_submit")
+            sample_video = gr.Video()
+            with gr.Column(visible = False) as share_page:
+                with gr.Tabs(elem_classes=['select2', 'slient2']):
+                    with gr.Tab("Video"):
+                        final_video = gr.Video(height = 512, width = 1536, show_download_button = False)
+                    with gr.Tab("Share"):
                         gr.Markdown("""
                                 <html>
                                 <head>
@@ -566,7 +637,7 @@ with gr.Blocks(css = css) as demo:
                                 </body>
                                 </html>
                                 """)
-                        QR_img  = gr.Image(height = 512, width = 1536, container = False, show_download_button = False)
+                        QR_img  = gr.Image(height = 256, width = 1536, container = False, show_download_button = False)
                         with gr.Row():
                             gr.Markdown("            ")
                             facebook = gr.HTML("""
@@ -638,28 +709,28 @@ with gr.Blocks(css = css) as demo:
                                         </html>
                                         """)
                             gr.Markdown("            ")
-                            gr.Markdown("""
-                                    <html>
-                                    <head>
-                                    <style>
-                                        .centered-text {
-                                        text-align: center;
-                                        font-weight: bold;
-                                        }
-                                    </style>
-                                    </head>
-                                    <body>
+                        gr.Markdown("""
+                                <html>
+                                <head>
+                                <style>
+                                    .centered-text {
+                                    text-align: center;
+                                    font-weight: bold;
+                                    }
+                                </style>
+                                </head>
+                                <body>
 
-                                    <p style="font-size: 15px; color: black;">Or copy the link</p>
-                                    </body>
-                                    </html>
-                                    """)
-                        copy_page = gr.Textbox(value = "www.google.com", label = "", show_copy_button = True)
+                                <p style="font-size: 15px; color: black;">Or copy the link</p>
+                                </body>
+                                </html>
+                                """)
+                        copy_page = gr.Textbox(value = "", label = "", show_copy_button = True)
 
 
-            btn_video.click(generateVideo, inputs = [cb_house, cb_dinning, cb_kitchen, cb_living, cb_bath, cb_bedroom1, cb_bedroom2, cb_bedroom3, cb_audio, cb_effect, cb_descri, fileName], outputs = [final_video])
+            btn_video.click(generateVideo, inputs = [cb_house, cb_dinning, cb_kitchen, cb_living, cb_bath, cb_bedroom1, cb_bedroom2, cb_bedroom3, cb_audio, cb_effect, cb_descri, fileName], outputs = [final_video, sample_video])
 
-            share_video_btn.click(generateQRcode, inputs = [cb_audio, cb_effect, cb_descri, fileName], outputs = [QR_img, facebook, reddit, weibo, twitter])
+            final_video.change(generateQRcode, inputs = [cb_audio, cb_effect, cb_descri, fileName], outputs = [QR_img, facebook, reddit, weibo, twitter, share_page, copy_page, sample_video])
     
 
     
