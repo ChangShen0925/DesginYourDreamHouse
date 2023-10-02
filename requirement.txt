@@ -14,3 +14,4 @@ git+https://github.com/openai/whisper.git
 git+https://github.com/huggingface/transformers.git
 IPython==8.12.2
 torchaudio
+pyshorteners
