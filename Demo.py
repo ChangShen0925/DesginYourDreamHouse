@@ -44,6 +44,8 @@ def transcribe(audio):
 def clear():
     return None
 
+def hideColumns():
+    return gr.Column.update(visible = False), gr.Column.update(visible = False), gr.Textbox.update(value = "00")
 def showSharePage(boolean):
     if boolean[0] == "0":
         return gr.Column.update(visible = True), gr.Column.update(visible = False), gr.Textbox.update(value = "10")
@@ -368,20 +370,21 @@ css="""
       left: 300px;
       max-width: 500px;
       margin: auto;
-      background-color: white;
       }
 
-    #button_submit {background: #FF7712; color: #FFFFFF !important;} 
-    #button_other {border-color: #FF7712; color: #FF7712; background: #FFFFFF;} 
+    #button_submit {background: #FF7712; color: #FFFFFF !important; max-width: 25%; min-width: 25%;} 
+    #button_enhance {border-color: #FF7712; color: #FF7712; background: #FFFFFF; max-width: 25%; min-width: 25%;} 
+    #button_clear {border-color: #FF7712; color: #FF7712; background: #FFFFFF; max-width: 12.5%; min-width: 12.5%;} 
 
-    #audio_button_submit {position: relative; background: #FF7712; color: #FFFFFF !important; height: 40px; top: 30px;}
-    #audio_button_other {position: relative; border-color: #FF7712; color: #FF7712; background: #FFFFFF; height: 40px; top: 30px;} 
+    #audio_button_submit {position: relative; background: #FF7712; color: #FFFFFF !important; top: 30px; max-width: 25%; min-width: 25%;}
+    #audio_button_enhance {position: relative; border-color: #FF7712; color: #FF7712; background: #FFFFFF; top: 30px; max-width: 25%; min-width: 25%;} 
+    #audio_button_clear {position: relative; border-color: #FF7712; color: #FF7712; background: #FFFFFF; top: 30px; max-width: 12.5%; min-width: 12.5%;} 
     #audio_id {height: 34px;}
-
+    #checkbox_id {max-width: 16.7%; min-width: 16.7%;}
     .select button.selected{
         background-color: #FF7712;
         width: 25%;
-        font-size: 25px !important;
+        font-size: 17px !important;
         color: white;
 
     }
@@ -389,21 +392,21 @@ css="""
     .slient button{
         background-color: ##F4F6FA;
         width: 25%;
-        font-size: 25px !important;
+        font-size: 17px !important;
         color: black;
     }
     .select2 button.selected{
         background-color: #FF7712;
-        width: 50%;
         font-size: 17px !important;
+        width: 100%
         color: white;
 
     }
 
     .slient2 button{
         background-color: ##F4F6FA;
-        width: 50%;
         font-size: 17px !important;
+        width: 100%;
         color: black;
     }
     """
@@ -481,14 +484,12 @@ with gr.Blocks(css = css) as demo:
                 with gr.Row():
                     txt1 = gr.Textbox(label="Enter Your Description", lines=3)
                     speech_audio = gr.Audio(source="microphone")
-            with gr.Row():
-                gr.Markdown("                                          ")
-                gr.Markdown("                                          ")
-                gr.Markdown("                                          ")
-                gr.Markdown("                                          ")
-                btn2 = gr.Button(value="Clear", scale = 1, elem_id = "button_other")
-                btn3 = gr.Button(value="Enhance Your Sentence?", scale = 2, elem_id = "button_other")
-                btn4 = gr.Button(value="Submit", scale = 2, elem_id = "button_submit")
+
+                with gr.Row():
+                    gr.Markdown("                                          ")
+                    btn2 = gr.Button(value="Clear", elem_id = "button_clear")
+                    btn3 = gr.Button(value="Enhance Your Sentence?", elem_id = "button_enhance")
+                    btn4 = gr.Button(value="Submit", elem_id = "button_submit")
                 # video_1 = gr.Video()
             img    =  gr.Image(height = 512, width = 1536, show_download_button = False)
             #btn1.click(viewExample, inputs = [options], outputs = [img1, img2, img3, img4, img5])
@@ -505,14 +506,12 @@ with gr.Blocks(css = css) as demo:
                 with gr.Row():
                     I_txt = gr.Textbox(label="Enter Your Description", line = 3)
                     I_audio = gr.Audio(source="microphone")
-            with gr.Row():
-                gr.Markdown("                                          ")
-                gr.Markdown("                                          ")
-                gr.Markdown("                                          ")
-                gr.Markdown("                                          ")
-                btn1 = gr.Button(value="Clear", scale = 1, elem_id = "button_other")
-                btn2 = gr.Button(value="Enhance Your Sentence?", scale = 2, elem_id = "button_other")
-                btn3 = gr.Button(variant="primary", value="Submit", scale = 2, elem_id = "button_submit")
+                with gr.Row():
+                    gr.Markdown("                                          ")
+
+                    btn1 = gr.Button(value="Clear", elem_id = "button_clear")
+                    btn2 = gr.Button(value="Enhance Your Sentence?", elem_id = "button_enhance")
+                    btn3 = gr.Button(variant="primary", value="Submit", elem_id = "button_submit")
             
 
             with gr.Row():
@@ -531,7 +530,7 @@ with gr.Blocks(css = css) as demo:
         with gr.TabItem("Audio") as tab3:
             gr.Markdown("""
                         <div>
-                            <p style="font-size: 25px; color: black;">View All your current Designs!</p>
+                            <p style="font-size: 17px; color: black;"><b>Select your designs!</b></p>
                         </div>
                         """)
             with gr.Row():
@@ -563,17 +562,17 @@ with gr.Blocks(css = css) as demo:
                         
             gr.Markdown("""
                         <div>
-                            <p style="font-size: 25px; color: black;">Design Your own Music!</p>
+                            <p style="font-size: 17px; color: black;"><b>Design Your own Music!</b></p>
                         </div>
                         """)
             with gr.Row():
                 txt   = gr.Textbox(label="Enter Your Description")
             with gr.Column(elem_classes=['select2', 'slient2']):
                 with gr.Row():
-                    audio = gr.Audio(source="microphone", container = False, scale = 6, elem_id = "audio_id", show_download_button = False)
-                    btn1 = gr.Button(value="Clear", scale = 1, elem_id = "audio_button_other")
-                    btn2 = gr.Button( value="Enhance Your Sentence?", scale = 2, elem_id = "audio_button_other")
-                    btn3 = gr.Button(variant="primary", value="Submit", scale = 2, elem_id = "audio_button_submit")
+                    audio = gr.Audio(source="microphone", container = False, elem_id = "audio_id", show_download_button = False)
+                    btn1 = gr.Button(value="Clear", elem_id = "audio_button_clear")
+                    btn2 = gr.Button(value="Enhance Your Sentence?", elem_id = "audio_button_enhance")
+                    btn3 = gr.Button(value="Submit", elem_id = "audio_button_submit")
             
             gr.Markdown("""
                                 <html>
@@ -631,17 +630,17 @@ with gr.Blocks(css = css) as demo:
         with gr.TabItem("Generate"):
             gr.Markdown("""
                         <div>
-                            <p style="font-size: 25px; color: black;">Generate Your own House introduction</p>
+                            <p style="font-size: 17px; color: black;"><b>Generate your house introduction</b></p>
                         </div>
                         """)
             
             intro_txt   = gr.Textbox(label="Enter Your Description")
-            intro_drop  = gr.Dropdown(["EN_Speaker(Male)", "EN_Speaker(Female)", "CN_Speaker(Male)", "CN_Speaker(Female)"], value = "EN_Speaker(Male)", multiselect=False, label="Share", scale = 1)
+            intro_drop  = gr.Dropdown(["EN_Speaker(Male)", "EN_Speaker(Female)", "CN_Speaker(Male)", "CN_Speaker(Female)"], value = "EN_Speaker(Male)", multiselect=False, label="Share")
             with gr.Column(elem_classes=['select2', 'slient2']):
                 with gr.Row():
-                    intro_audio = gr.Audio(source="microphone", container = False, elem_id = "audio_id", scale = 3, show_download_button = False)
-                    intro_clear = gr.Button(value="Clear", elem_id = "audio_button_other", scale = 1)
-                    intro_btn = gr.Button(value="Generate", elem_id = "audio_button_submit", scale = 2)
+                    intro_audio = gr.Audio(source="microphone", container = False, elem_id = "audio_id", show_download_button = False)
+                    intro_clear = gr.Button(value="Clear", elem_id = "audio_button_clear")
+                    intro_btn = gr.Button(value="Generate", elem_id = "audio_button_submit")
             intro_btn.click(generateDescription, inputs = [cb_house, cb_dinning, cb_kitchen, cb_living, cb_bath, cb_bedroom1, cb_bedroom2, cb_bedroom3, prompt, fileName, intro_drop], outputs = [intro_txt, intro_audio])
             intro_clear.click(clear, inputs = [], outputs = [intro_txt])
             gr.Markdown("""
@@ -692,31 +691,58 @@ with gr.Blocks(css = css) as demo:
 
             gr.Markdown("""
                         <div>
-                            <p style="font-size: 25px; color: black;">Generate the Video!</p>
+                            <p style="font-size: 17px; color: black;"><b>Select what audio to include in your video</b></p>
                         </div>
                         """)
             
             
             with gr.Row():
-                cb_audio  = gr.Checkbox(value = 'True', label = "audio ")
-                cb_effect = gr.Checkbox(value = 'True', label = "effect")
-                cb_descri = gr.Checkbox(value = 'True', label = "description")
-
-            with gr.Row():
-                gr.Markdown("                                          ")
-                gr.Markdown("                                          ")
-                gr.Markdown("                                          ")
-                gr.Markdown("                                          ")
-                btn_Share = gr.Button(value="Share", scale = 1, elem_id = "button_other")
-                btn_QR = gr.Button(value="Generate QR code", scale = 2, elem_id = "button_other")
-                btn_video = gr.Button(value="Generate Your Video!", scale = 2, elem_id = "button_submit")
+                cb_audio  = gr.Checkbox(value = 'True', label = "audio ", container = False, elem_id = "checkbox_id")
+                cb_effect = gr.Checkbox(value = 'True', label = "effect", container = False, elem_id = "checkbox_id")
+                cb_descri = gr.Checkbox(value = 'True', label = "description",container = False, elem_id = "checkbox_id")
+            gr.Markdown("""
+                                <html>
+                                <head>
+                                <style>
+                                    .centered-text {
+                                    text-align: center;
+                                    font-weight: bold;
+                                    }
+                                </style>
+                                </head>
+                                <body>
+                                <div style="width: 100%; color: white; font-size: 10px; font-family: Roboto Flex; font-weight: 800; line-height: 10px; word-wrap: break-word">Design your Dream House</div>
+                                </body>
+                                </html>
+                                """)
+            gr.Markdown("""
+                                <html>
+                                <head>
+                                <style>
+                                    .centered-text {
+                                    text-align: center;
+                                    font-weight: bold;
+                                    }
+                                </style>
+                                </head>
+                                <body>
+                                <div style="width: 100%; color: white; font-size: 10px; font-family: Roboto Flex; font-weight: 800; line-height: 10px; word-wrap: break-word">Design your Dream House</div>
+                                </body>
+                                </html>
+                                """)
+            with gr.Column(elem_classes=['select2', 'slient2']):
+                with gr.Row():
+                    gr.Markdown("                                          ")
+                    btn_Share = gr.Button(value="Share", elem_id = "button_clear")
+                    btn_QR = gr.Button(value="Generate QR code", elem_id = "button_enhance")
+                    btn_video = gr.Button(value="Generate Your Video!", elem_id = "button_submit")
 
             bool_test = gr.Textbox(value = "00", visible = False)
             with gr.Column(elem_classes=['select2', 'slient2']):
                 final_video = gr.Video(height = 512, width = 1536)
-            with gr.Column(elem_id = "poppage", visible = False) as QRcodePage:
+            with gr.Column(variant = 'compact', elem_id = "poppage", visible = False) as QRcodePage:
                 QR_img  = gr.Image(height = 256, width = 1536, container = False, show_download_button = False)
-            with gr.Column(elem_id = "poppage", visible = False) as SharePage:
+            with gr.Column(variant = 'compact', elem_id = "poppage", visible = False) as SharePage:
                 gr.Markdown("""
                         <html>
                         <head>
@@ -823,6 +849,7 @@ with gr.Blocks(css = css) as demo:
                         """)
                 copy_page = gr.Textbox(value = "", label = "", show_copy_button = True)
 
+            copy_page.blur(hideColumns, inputs = [], outputs = [QRcodePage, SharePage, bool_test])
 
             btn_video.click(generateVideo, inputs = [cb_house, cb_dinning, cb_kitchen, cb_living, cb_bath, cb_bedroom1, cb_bedroom2, cb_bedroom3, cb_audio, cb_effect, cb_descri, fileName], outputs = [final_video])
             btn_Share.click(showSharePage, inputs = [bool_test], outputs = [SharePage, QRcodePage, bool_test])
