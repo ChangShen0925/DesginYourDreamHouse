@@ -363,6 +363,8 @@ def generate_room_inside(cata, other, filename, PROMPT):
 
 css="""
     #image_background {background-color: #000000}
+    #button_close {position: relative; left:450px; font-size: 30px; color: black !important; max-width: 1px !important; max-height: 30px !important; min-width: 1px !important; min-height: 30px !important;}
+
     #poppage {
       position: relative;
       height: 250px;
@@ -741,8 +743,10 @@ with gr.Blocks(css = css) as demo:
             with gr.Column(elem_classes=['select2', 'slient2']):
                 final_video = gr.Video(height = 512, width = 1536)
             with gr.Column(variant = 'compact', elem_id = "poppage", visible = False) as QRcodePage:
+                close_button_QR = gr.Button(value = 'X', elem_id = "button_close")
                 QR_img  = gr.Image(height = 256, width = 1536, container = False, show_download_button = False)
             with gr.Column(variant = 'compact', elem_id = "poppage", visible = False) as SharePage:
+                close_button_Share = gr.Button(value = 'X', elem_id = "button_close")
                 gr.Markdown("""
                         <html>
                         <head>
@@ -849,8 +853,9 @@ with gr.Blocks(css = css) as demo:
                         """)
                 copy_page = gr.Textbox(value = "", label = "", show_copy_button = True)
 
-            copy_page.blur(hideColumns, inputs = [], outputs = [QRcodePage, SharePage, bool_test])
-
+    
+            close_button_QR.click(hideColumns, inputs = [], outputs = [QRcodePage, SharePage, bool_test])
+            close_button_Share.click(hideColumns, inputs = [], outputs = [QRcodePage, SharePage, bool_test])
             btn_video.click(generateVideo, inputs = [cb_house, cb_dinning, cb_kitchen, cb_living, cb_bath, cb_bedroom1, cb_bedroom2, cb_bedroom3, cb_audio, cb_effect, cb_descri, fileName], outputs = [final_video])
             btn_Share.click(showSharePage, inputs = [bool_test], outputs = [SharePage, QRcodePage, bool_test])
             btn_QR.click(showQRcodePage, inputs = [bool_test], outputs = [QRcodePage, SharePage, bool_test])
