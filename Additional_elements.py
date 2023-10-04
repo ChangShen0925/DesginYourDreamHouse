@@ -5,7 +5,7 @@ import scipy
 
 import random
 from ImageEffects import *
-from moviepy.editor import VideoFileClip, AudioFileClip, CompositeAudioClip
+from moviepy.editor import VideoFileClip, AudioFileClip, CompositeAudioClip, concatenate_audioclips
 from PIL import Image
 import cv2
 import numpy as np
@@ -17,7 +17,7 @@ def text2audio(prompt, filename):
     pipe = AudioLDM2Pipeline.from_pretrained(repo_id, torch_dtype=torch.float32)
     pipe = pipe.to("cuda")
 
-    audio = pipe(prompt, num_inference_steps=20, audio_length_in_s=30.0).audios[0]
+    audio = pipe(prompt, num_inference_steps=100, audio_length_in_s=30.0).audios[0]
 
     scipy.io.wavfile.write(f"{filename}/techno.wav", rate=16000, data=audio)
 
@@ -46,6 +46,8 @@ def JustImage(select_list, image_list, filename, description):
         stop_time = 700
     else:
         stop_time = 0
+    if upper == 0:
+        video = stopFrame(video, 100, combined_image)
     for i in range(0, upper, 2):
         frame = combined_image[:height, i:i+width]
         if i%width == 0:
@@ -87,22 +89,17 @@ def audio2video(video, filename, description):
 
     audio = AudioFileClip(f"{filename}/techno.wav")
 
-    
 
     num_audio_repeats = int(video.duration / audio.duration) + 1
 
-    audio = audio.volumex(0.5)  
-    audio_clips = [audio] * num_audio_repeats
-    
 
-
+    new_audio = concatenate_audioclips([audio for i in range(num_audio_repeats)])
+    new_audio = new_audio.subclip(0, video.duration)
     if description:
         audio2 = AudioFileClip(f"{filename}/bark_out.wav")
-        final_audio = CompositeAudioClip([audio, audio2])
+        final_audio = CompositeAudioClip([new_audio.volumex(1), audio2.volumex(5)])
     else:
-        final_audio = CompositeAudioClip(audio_clips)
-
-    final_audio = final_audio.subclip(0, video.duration)
+        final_audio = new_audio
     video = video.set_audio(final_audio)
 
     video.write_videofile(f"{filename}/output_with_audio.mp4", codec="libx264", audio_codec="aac")
@@ -114,7 +111,7 @@ def speech2video(video, filename):
 
     audio = AudioFileClip(f"{filename}/bark_out.wav")
 
-    audio = audio.volumex(5.0)  
+    audio = audio.volumex(10.0)  
 
 
     video = video.set_audio(audio)

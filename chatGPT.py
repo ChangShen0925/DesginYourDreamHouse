@@ -61,3 +61,18 @@ def enhance_your_sentence4(prompt):
     response_message = response_message.replace('\\', '')
         
     return response_message
+
+def TranslateToChinese(prompt):
+    
+    PROMPT = prompt + "先翻译成中文，再必须必须至少润色到45个字以上，50个字以下"
+    messages = [{"role": "system", "content": 
+            PROMPT}]
+    response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=messages)
+    
+    response_message = response["choices"][0]["message"].content
+    response_message = response_message.replace('\n', ' ')
+    response_message = response_message.replace('\\', '')
+        
+    return response_message

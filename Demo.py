@@ -84,9 +84,12 @@ def generateDescription(cb_house, cb_dinning, cb_kitchen, cb_living, cb_bath, cb
     
     introduction = ''
     for i in range(len(description)):
-        introduction+=description[i] + ' '
-        textToSpeech(description[i], filename, voice, i)
         
+        if 'CN' in voice:
+            description[i] = TranslateToChinese(description[i])
+        introduction+=description[i] + ' '
+
+        textToSpeech(description[i], filename, voice, i)
     mergeAll(filename)
     return introduction, os.getcwd()+f'/{filename}/bark_out.wav'
 
@@ -288,7 +291,7 @@ def viewExample(Style):
 def generator(Prompt):
     pipe = DiffusionPipeline.from_pretrained("stabilityai/stable-diffusion-xl-base-1.0", torch_dtype=torch.float16, use_safetensors=True, variant="fp16")
     pipe.to("cuda")
-    images = pipe(prompt=Prompt, num_inference_steps=20).images[0]
+    images = pipe(prompt=Prompt, num_inference_steps=50).images[0]
     torch.cuda.empty_cache()
     return images
 
@@ -367,7 +370,7 @@ css="""
 
     #poppage {
       position: relative;
-      height: 250px;
+      height: 300px;
       bottom: 530px;
       left: 300px;
       max-width: 500px;
@@ -503,7 +506,7 @@ with gr.Blocks(css = css) as demo:
             speech_audio.change(transcribe, inputs = [speech_audio], outputs = [txt1])
 
         with gr.TabItem("Interior") as tab2:
-            room_options = gr.Dropdown([ "dinning room", "kitchen", "living room", "bathroom", "bedroom"],  value = "dinning room", multiselect=False, label="Choose your design")
+            room_options = gr.Dropdown([ "dining room", "kitchen", "living room", "bathroom", "bedroom"],  value = "dining room", multiselect=False, label="Choose your design")
             with gr.Column(elem_classes=['select2', 'slient2']):
                 with gr.Row():
                     I_txt = gr.Textbox(label="Enter Your Description", line = 3)
@@ -564,7 +567,7 @@ with gr.Blocks(css = css) as demo:
                         
             gr.Markdown("""
                         <div>
-                            <p style="font-size: 17px; color: black;"><b>Design Your own Music!</b></p>
+                            <p style="font-size: 17px; color: black;"><b>Compose Your own Music!</b></p>
                         </div>
                         """)
             with gr.Row():
@@ -693,7 +696,7 @@ with gr.Blocks(css = css) as demo:
 
             gr.Markdown("""
                         <div>
-                            <p style="font-size: 17px; color: black;"><b>Select what audio to include in your video</b></p>
+                            <p style="font-size: 17px; color: black;"><b>Choose the ingredients to include in your video</b></p>
                         </div>
                         """)
             
@@ -864,4 +867,4 @@ with gr.Blocks(css = css) as demo:
 
     
 if __name__ == "__main__":
-    demo.queue().launch(share=True, debug=True)
+    demo.queue(concurrency_count = 20).launch(share=True, debug=True)
