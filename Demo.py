@@ -213,7 +213,7 @@ def viewAllimages(filename):
 
     return output[0], output[1], output[2], output[3], output[4], output[5], output[6], output[7]
 
-def generateVideo(cb1, cb2, cb3, cb4, cb5, cb6, cb7, cb8, audio, effect, description, filename):
+def generateVideo(cb1, cb2, cb3, cb4, cb5, cb6, cb7, cb8, audio, effect, description, filename, voice):
     if filename == '':
         return None
     if 'techno.wav' not in os.listdir(filename):
@@ -221,7 +221,7 @@ def generateVideo(cb1, cb2, cb3, cb4, cb5, cb6, cb7, cb8, audio, effect, descrip
     if 'bark_out.wav' not in os.listdir(filename):
         description = False
     if effect:
-        AddImageEffects([cb1, cb2, cb3, cb4, cb5, cb6, cb7, cb8], viewAllimages(filename), filename, description)
+        AddImageEffects([cb1, cb2, cb3, cb4, cb5, cb6, cb7, cb8], viewAllimages(filename), filename, description, voice)
         if description:
             speech2video(VideoFileClip(f"{filename}/output_with_effects.mp4"), filename)
             if audio:
@@ -237,7 +237,7 @@ def generateVideo(cb1, cb2, cb3, cb4, cb5, cb6, cb7, cb8, audio, effect, descrip
                 return os.getcwd() + f"/{filename}/output_with_effects.mp4"
             
     else:
-        JustImage([cb1, cb2, cb3, cb4, cb5, cb6, cb7, cb8], viewAllimages(filename), filename, description)
+        JustImage([cb1, cb2, cb3, cb4, cb5, cb6, cb7, cb8], viewAllimages(filename), filename, description, voice)
         if description:
             speech2video(VideoFileClip(f"{filename}/output.mp4"), filename)
             if audio:
@@ -416,7 +416,7 @@ css="""
     }
     """
 
-with gr.Blocks(css = css) as demo:
+with gr.Blocks(css = css, title = "AI Home Designer") as demo:
     
     gr.HTML("""
             <html>
@@ -461,14 +461,11 @@ with gr.Blocks(css = css) as demo:
             #btn1 = gr.Button(value="View Some example!")
             with gr.Column(elem_id = "image_background"):
                 gr.Markdown("""
-                                <html>
-                                <head>
-                                </head>
-                                <body>
-                                <div style="width: 100%; color: black; font-size: 10px; font-family: Roboto Flex; font-weight: 800; line-height: 10px; word-wrap: break-word">Design your Dream House</div>
-                                </body>
-                                </html>
-                                """)
+                            <html>
+                            <p style="font-size: 15px; color: black;">&nbsp;&nbsp</p>
+                            </body>
+                            </html>
+                            """)
                 with gr.Row():
                     
                     img1    =  gr.Image(value = Image.open(os.getcwd() + '/HouseStyle/Asain/Asain1.png'), show_download_button = False, label = "Preview 1")
@@ -478,10 +475,7 @@ with gr.Blocks(css = css) as demo:
                     img5    =  gr.Image(value = Image.open(os.getcwd() + '/HouseStyle/Asain/Asain5.png'), show_download_button = False, label = "Preview 5")
                 gr.Markdown("""
                             <html>
-                            <head>
-                            </head>
-                            <body>
-                            <div style="width: 100%; text-align: center; color: black; font-size: 10px; font-weight: 800; line-height: 10px; word-wrap: break-word">Design your Dream House</div>
+                            <p style="font-size: 15px; color: black;">&nbsp;&nbsp</p>
                             </body>
                             </html>
                             """)
@@ -580,50 +574,23 @@ with gr.Blocks(css = css) as demo:
                     btn3 = gr.Button(value="Submit", elem_id = "audio_button_submit")
             
             gr.Markdown("""
-                                <html>
-                                <head>
-                                <style>
-                                    .centered-text {
-                                    text-align: center;
-                                    font-weight: bold;
-                                    }
-                                </style>
-                                </head>
-                                <body>
-                                <div style="width: 100%; color: white; font-size: 10px; font-family: Roboto Flex; font-weight: 800; line-height: 10px; word-wrap: break-word">Design your Dream House</div>
-                                </body>
-                                </html>
-                                """)
+              <html>
+              <p style="font-size: 15px; color: black;">&nbsp;&nbsp</p>
+              </body>
+              </html>
+              """)
             gr.Markdown("""
-                                <html>
-                                <head>
-                                <style>
-                                    .centered-text {
-                                    text-align: center;
-                                    font-weight: bold;
-                                    }
-                                </style>
-                                </head>
-                                <body>
-                                <div style="width: 100%; color: white; font-size: 10px; font-family: Roboto Flex; font-weight: 800; line-height: 10px; word-wrap: break-word">Design your Dream House</div>
-                                </body>
-                                </html>
-                                """)
+              <html>
+              <p style="font-size: 15px; color: black;">&nbsp;&nbsp</p>
+              </body>
+              </html>
+              """)
             gr.Markdown("""
-                                <html>
-                                <head>
-                                <style>
-                                    .centered-text {
-                                    text-align: center;
-                                    font-weight: bold;
-                                    }
-                                </style>
-                                </head>
-                                <body>
-                                <div style="width: 100%; color: white; font-size: 10px; font-family: Roboto Flex; font-weight: 800; line-height: 10px; word-wrap: break-word">Design your Dream House</div>
-                                </body>
-                                </html>
-                                """)
+              <html>
+              <p style="font-size: 15px; color: black;">&nbsp;&nbsp</p>
+              </body>
+              </html>
+              """)
 
             btn1.click(clear, inputs=[], outputs=[txt])
             btn2.click(enhance_your_sentence3, inputs = [txt], outputs = [txt])
@@ -649,50 +616,23 @@ with gr.Blocks(css = css) as demo:
             intro_btn.click(generateDescription, inputs = [cb_house, cb_dinning, cb_kitchen, cb_living, cb_bath, cb_bedroom1, cb_bedroom2, cb_bedroom3, prompt, fileName, intro_drop], outputs = [intro_txt, intro_audio])
             intro_clear.click(clear, inputs = [], outputs = [intro_txt])
             gr.Markdown("""
-                                <html>
-                                <head>
-                                <style>
-                                    .centered-text {
-                                    text-align: center;
-                                    font-weight: bold;
-                                    }
-                                </style>
-                                </head>
-                                <body>
-                                <div style="width: 100%; color: white; font-size: 10px; font-family: Roboto Flex; font-weight: 800; line-height: 10px; word-wrap: break-word">Design your Dream House</div>
-                                </body>
-                                </html>
-                                """)
+              <html>
+              <p style="font-size: 15px; color: black;">&nbsp;&nbsp</p>
+              </body>
+              </html>
+              """)
             gr.Markdown("""
-                                <html>
-                                <head>
-                                <style>
-                                    .centered-text {
-                                    text-align: center;
-                                    font-weight: bold;
-                                    }
-                                </style>
-                                </head>
-                                <body>
-                                <div style="width: 100%; color: white; font-size: 10px; font-family: Roboto Flex; font-weight: 800; line-height: 10px; word-wrap: break-word">Design your Dream House</div>
-                                </body>
-                                </html>
-                                """)
+              <html>
+              <p style="font-size: 15px; color: black;">&nbsp;&nbsp</p>
+              </body>
+              </html>
+              """)
             gr.Markdown("""
-                                <html>
-                                <head>
-                                <style>
-                                    .centered-text {
-                                    text-align: center;
-                                    font-weight: bold;
-                                    }
-                                </style>
-                                </head>
-                                <body>
-                                <div style="width: 100%; color: white; font-size: 10px; font-family: Roboto Flex; font-weight: 800; line-height: 10px; word-wrap: break-word">Design your Dream House</div>
-                                </body>
-                                </html>
-                                """)
+              <html>
+              <p style="font-size: 15px; color: black;">&nbsp;&nbsp</p>
+              </body>
+              </html>
+              """)
 
             gr.Markdown("""
                         <div>
@@ -706,35 +646,17 @@ with gr.Blocks(css = css) as demo:
                 cb_effect = gr.Checkbox(value = 'True', label = "effect", container = False, elem_id = "checkbox_id")
                 cb_descri = gr.Checkbox(value = 'True', label = "description",container = False, elem_id = "checkbox_id")
             gr.Markdown("""
-                                <html>
-                                <head>
-                                <style>
-                                    .centered-text {
-                                    text-align: center;
-                                    font-weight: bold;
-                                    }
-                                </style>
-                                </head>
-                                <body>
-                                <div style="width: 100%; color: white; font-size: 10px; font-family: Roboto Flex; font-weight: 800; line-height: 10px; word-wrap: break-word">Design your Dream House</div>
-                                </body>
-                                </html>
-                                """)
+              <html>
+              <p style="font-size: 15px; color: black;">&nbsp;&nbsp</p>
+              </body>
+              </html>
+              """)
             gr.Markdown("""
-                                <html>
-                                <head>
-                                <style>
-                                    .centered-text {
-                                    text-align: center;
-                                    font-weight: bold;
-                                    }
-                                </style>
-                                </head>
-                                <body>
-                                <div style="width: 100%; color: white; font-size: 10px; font-family: Roboto Flex; font-weight: 800; line-height: 10px; word-wrap: break-word">Design your Dream House</div>
-                                </body>
-                                </html>
-                                """)
+              <html>
+              <p style="font-size: 15px; color: black;">&nbsp;&nbsp</p>
+              </body>
+              </html>
+              """)
             with gr.Column(elem_classes=['select2', 'slient2']):
                 with gr.Row():
                     gr.Markdown("                                          ")
@@ -859,7 +781,7 @@ with gr.Blocks(css = css) as demo:
     
             close_button_QR.click(hideColumns, inputs = [], outputs = [QRcodePage, SharePage, bool_test])
             close_button_Share.click(hideColumns, inputs = [], outputs = [QRcodePage, SharePage, bool_test])
-            btn_video.click(generateVideo, inputs = [cb_house, cb_dinning, cb_kitchen, cb_living, cb_bath, cb_bedroom1, cb_bedroom2, cb_bedroom3, cb_audio, cb_effect, cb_descri, fileName], outputs = [final_video])
+            btn_video.click(generateVideo, inputs = [cb_house, cb_dinning, cb_kitchen, cb_living, cb_bath, cb_bedroom1, cb_bedroom2, cb_bedroom3, cb_audio, cb_effect, cb_descri, fileName, intro_drop], outputs = [final_video])
             btn_Share.click(showSharePage, inputs = [bool_test], outputs = [SharePage, QRcodePage, bool_test])
             btn_QR.click(showQRcodePage, inputs = [bool_test], outputs = [QRcodePage, SharePage, bool_test])
             final_video.change(generateQRcode, inputs = [cb_audio, cb_effect, cb_descri, fileName], outputs = [QR_img, facebook, reddit, weibo, twitter, copy_page])
@@ -867,4 +789,4 @@ with gr.Blocks(css = css) as demo:
 
     
 if __name__ == "__main__":
-    demo.queue(concurrency_count = 20).launch(share=True, debug=True)
+    demo.queue(concurrency_count = 20).launch(share=False, debug=True, favicon_path = os.getcwd()+'/favicon.ico')

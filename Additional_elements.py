@@ -22,7 +22,7 @@ def text2audio(prompt, filename):
     scipy.io.wavfile.write(f"{filename}/techno.wav", rate=16000, data=audio)
 
 
-def JustImage(select_list, image_list, filename, description):
+def JustImage(select_list, image_list, filename, description, voice):
     selected_images = []
     for i in range(len(select_list)):
         if select_list[i] and image_list[i] is not None:
@@ -43,7 +43,10 @@ def JustImage(select_list, image_list, filename, description):
     combined_image = cv2.cvtColor(np.array(combined_image), cv2.COLOR_RGB2BGR)
 
     if description:
-        stop_time = 700
+        if 'CN' not in voice:
+            stop_time = 700
+        else:
+            stop_time = 500
     else:
         stop_time = 0
     if upper == 0:
@@ -56,7 +59,7 @@ def JustImage(select_list, image_list, filename, description):
     
     video.release()
 
-def AddImageEffects(select_list, image_list, filename, description):
+def AddImageEffects(select_list, image_list, filename, description, voice):
     selected_images = []
     for i in range(len(select_list)):
         if select_list[i] and image_list[i] is not None:
@@ -69,7 +72,10 @@ def AddImageEffects(select_list, image_list, filename, description):
     video = cv2.VideoWriter(f'{filename}/output_with_effects.mp4', fourcc, 100.0, (width, height))
 
     if description:
-        stop_time = 1200
+        if 'CN' not in voice:
+            stop_time = 1200
+        else:
+            stop_time = 800
     else:
         stop_time = 100
     random_elements = random.sample(effect_list, len(selected_images))

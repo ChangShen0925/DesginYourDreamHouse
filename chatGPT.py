@@ -64,7 +64,7 @@ def enhance_your_sentence4(prompt):
 
 def TranslateToChinese(prompt):
     
-    PROMPT = prompt + "先翻译成中文，再必须必须至少润色到45个字以上，50个字以下"
+    PROMPT = prompt + "先翻译成中文，润色一下但必须控制在30个字以上，35个字以下"
     messages = [{"role": "system", "content": 
             PROMPT}]
     response = openai.ChatCompletion.create(
