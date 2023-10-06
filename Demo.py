@@ -198,7 +198,80 @@ def generateQRcode(audio, effect, description, filename, request: gr.Request):
                               """), gr.Textbox.update(pyshorteners.Shortener().tinyurl.short(url))
 
 
-
+def viewAllimagesHTML(filename):
+    if filename == '':
+        return gr.HTML.update(f"""
+                        <div style="text-align: center;">
+                            <div style="display: inline-block; margin: 32px;">
+                                <img src='/file={os.getcwd() + '/Vector.png'}' width='300px' height='300px'>
+                            </div>
+                            <div style="display: inline-block; margin: 32px;">
+                                <img src='/file={os.getcwd() + '/Vector.png'}' width='300px' height='300px'>
+                            </div>
+                            <div style="display: inline-block; margin: 32px;">
+                                <img src='/file={os.getcwd() + '/Vector.png'}' width='300px' height='300px'>
+                            </div>
+                            <div style="display: inline-block; margin: 32px;">
+                                <img src='/file={os.getcwd() + '/Vector.png'}' width='300px' height='300px'>
+                            </div>
+                        </div>
+                        """), gr.HTML.update(f"""
+                        <div style="text-align: center;">
+                            <div style="display: inline-block; margin: 32px;">
+                                <img src='/file={os.getcwd() + '/Vector.png'}' width='300px' height='300px'>
+                            </div>
+                            <div style="display: inline-block; margin: 32px;">
+                                <img src='/file={os.getcwd() + '/Vector.png'}' width='300px' height='300px'>
+                            </div>
+                            <div style="display: inline-block; margin: 32px;">
+                                <img src='/file={os.getcwd() + '/Vector.png'}' width='300px' height='300px'>
+                            </div>
+                            <div style="display: inline-block; margin: 32px;">
+                                <img src='/file={os.getcwd() + '/Vector.png'}' width='300px' height='300px'>
+                            </div>
+                        </div>
+                        """)
+    output = [os.getcwd() + '/' + f'{filename}/House.png', None, None, None, None, None, None, None]
+    for i in os.listdir(filename):
+        if ('.png' in i and 'House' not in i) and 'qrcode.png' != i:
+            for j in range(len(output)):
+                if output[j] is None:
+                    output[j] = os.getcwd() + '/' +f'{filename}/{i}'
+                    break
+    for i in range(len(output)):
+        if output[i] is None:
+            output[i] = os.getcwd() + '/Vector.png'
+    return gr.HTML.update(f"""
+                        <div style="text-align: center;">
+                            <div style="display: inline-block; margin: 32px;">
+                                <img src='/file={output[0]}' width='300px' height='300px'>
+                            </div>
+                            <div style="display: inline-block; margin: 32px;">
+                                <img src='/file={output[1]}' width='300px' height='300px'>
+                            </div>
+                            <div style="display: inline-block; margin: 32px;">
+                                <img src='/file={output[2]}' width='300px' height='300px'>
+                            </div>
+                            <div style="display: inline-block; margin: 32px;">
+                                <img src='/file={output[3]}' width='300px' height='300px'>
+                            </div>
+                        </div>
+                        """), gr.HTML.update(f"""
+                        <div style="text-align: center;">
+                            <div style="display: inline-block; margin: 32px;">
+                                <img src='/file={output[4]}' width='300px' height='300px'>
+                            </div>
+                            <div style="display: inline-block; margin: 32px;">
+                                <img src='/file={output[5]}' width='300px' height='300px'>
+                            </div>
+                            <div style="display: inline-block; margin: 32px;">
+                                <img src='/file={output[6]}' width='300px' height='300px'>
+                            </div>
+                            <div style="display: inline-block; margin: 32px;">
+                                <img src='/file={output[7]}' width='300px' height='300px'>
+                            </div>
+                        </div>
+                        """)
 
 def viewAllimages(filename):
     if filename == '':
@@ -255,20 +328,73 @@ def generateVideo(cb1, cb2, cb3, cb4, cb5, cb6, cb7, cb8, audio, effect, descrip
     
 
 def viewCurrentImage(cata, filename):
-    if filename == '' and cata != 'bedroom':
-        return None, gr.Image.update(visible=False), gr.Image.update(visible=False)
-    elif filename == '':
-        return None, gr.Image.update(visible=True), gr.Image.update(visible=True)
+
+    if filename == '':
+        return gr.HTML.update(f"""
+                        <div style="text-align: center;">
+                            <div style="display: inline-block;">
+                                <img src='/file={os.getcwd() + '/Vector.png'}' width='300px' height='300px'>
+                            </div>
+                        </div>
+                        """) 
     if cata == 'bedroom':
-        for i in os.listdir(filename):
-            if 'bedroom1.png' == i:
-                return Image.open(f'{filename}/{i}'), gr.Image.update(visible=True), gr.Image.update(visible=True)
-        return None, gr.Image.update(visible=True), gr.Image.update(visible=True)
+        if 'bedroom3.png' in os.listdir(filename):
+            return gr.HTML.update(f"""
+                                <div style="text-align: center;">
+                                    <div style="display: inline-block; margin: 10px;">
+                                        <img src='/file={os.getcwd() + '/' + filename + '/bedroom1.png'}' width='412px' height='412px'>
+                                    </div>
+                                    <div style="display: inline-block; margin: 10px;">
+                                        <img src='/file={os.getcwd() + '/' + filename + '/bedroom2.png'}' width='412px' height='412px'>
+                                    </div>
+                                    <div style="display: inline-block; margin: 10px;">
+                                        <img src='/file={os.getcwd() + '/' + filename + '/bedroom3.png'}' width='412px' height='412px'>
+                                    </div>
+                                </div>
+                                """)
+        elif 'bedroom2.png' in os.listdir(filename):
+            return gr.HTML.update(f"""
+                                <div style="text-align: center;">
+                                    <div style="display: inline-block; margin: 10px;">
+                                        <img src='/file={os.getcwd() + '/' + filename + '/bedroom1.png'}' width='512px' height='512px'>
+                                    </div>
+                                    <div style="display: inline-block; margin: 10px;">
+                                        <img src='/file={os.getcwd() + '/' + filename + '/bedroom2.png'}' width='512px' height='512px'>
+                                    </div>
+                                </div>
+                                """)
+        elif 'bedroom1.png' in os.listdir(filename):
+            return gr.HTML.update(f"""
+                                <div style="text-align: center;">
+                                    <div style="display: inline-block; margin: 10px;">
+                                        <img src='/file={os.getcwd() + '/' + filename + '/bedroom1.png'}' width='512px' height='512px'>
+                                    </div>
+                                </div>
+                                """)
+        else:
+            return gr.HTML.update(f"""
+                        <div style="text-align: center;">
+                            <div style="display: inline-block;">
+                                <img src='/file={os.getcwd() + '/Vector.png'}' width='300px' height='300px'>
+                            </div>
+                        </div>
+                        """) 
     else:
-        for i in os.listdir(filename):
-            if f'{cata}.png' == i:
-                return Image.open(f'{filename}/{i}'), gr.Image.update(visible=False), gr.Image.update(visible=False)
-        return None, gr.Image.update(visible=False), gr.Image.update(visible=False)
+        if f'{cata}.png' in os.listdir(filename):
+            return gr.HTML.update(f"""
+                                <div style="text-align: center;">
+                                    <div style="display: inline-block; margin: 10px;">
+                                        <img src='/file={os.getcwd() + '/' + filename + '/' + cata + '.png'}' width='512px' height='512px'>
+                                    </div>
+                                </div>
+                                """)
+        return gr.HTML.update(f"""
+                        <div style="text-align: center;">
+                            <div style="display: inline-block;">
+                                <img src='/file={os.getcwd() + '/Vector.png'}' width='300px' height='300px'>
+                            </div>
+                        </div>
+                        """) 
        
     
 def change_options(choice):
@@ -282,11 +408,47 @@ def viewExample(Style):
     if len(Style) == 0:
         return None, None, None, None, None
     elif 'Other' in Style:
-        return Image.open(os.getcwd() + '/HouseStyle/Other/Other1.png'), Image.open(os.getcwd() + '/HouseStyle/Other/Other2.png'), Image.open(os.getcwd() + '/HouseStyle/Other/Other3.png'), Image.open(os.getcwd() + '/HouseStyle/Other/Other4.png'), Image.open(os.getcwd() + '/HouseStyle/Other/Other5.png')
+        return gr.HTML.update(f"""
+                                <div style="text-align: center;">
+                                    <div style="display: inline-block; margin: 5px;">
+                                        <img src='/file={os.getcwd() + '/HouseStyle/Other/Other1.png'}' width='279px' height='279px'>
+                                    </div>
+                                    <div style="display: inline-block; margin: 5px;">
+                                        <img src='/file={os.getcwd() + '/HouseStyle/Other/Other2.png'}' width='279px' height='279px'>
+                                    </div>
+                                    <div style="display: inline-block; margin: 5px;">
+                                        <img src='/file={os.getcwd() + '/HouseStyle/Other/Other3.png'}' width='279px' height='279px'>
+                                    </div>
+                                    <div style="display: inline-block; margin: 5px;">
+                                        <img src='/file={os.getcwd() + '/HouseStyle/Other/Other4.png'}' width='279px' height='279px'>
+                                    </div>
+                                    <div style="display: inline-block; margin: 5px;">
+                                        <img src='/file={os.getcwd() + '/HouseStyle/Other/Other5.png'}' width='279px' height='279px'>
+                                    </div>
+                                </div>
+                                """) 
     else:
         if Style == "Asian":
             Style = "Asain"
-        return Image.open(os.getcwd() + '/HouseStyle/' + Style + '/' + Style +'1.png'), Image.open(os.getcwd() + '/HouseStyle/' + Style + '/' + Style +'2.png'), Image.open(os.getcwd() + '/HouseStyle/' + Style + '/' + Style +'3.png'), Image.open(os.getcwd() + '/HouseStyle/' + Style + '/' + Style +'4.png'), Image.open(os.getcwd() + '/HouseStyle/' + Style + '/' + Style +'5.png')
+        return gr.HTML.update(f"""
+                                <div style="text-align: center;">
+                                    <div style="display: inline-block; margin: 5px;">
+                                        <img src='/file={os.getcwd() + '/HouseStyle/' + Style + '/' + Style +'1.png'}' width='279px' height='279px'>
+                                    </div>
+                                    <div style="display: inline-block; margin: 5px;">
+                                        <img src='/file={os.getcwd() + '/HouseStyle/' + Style + '/' + Style +'2.png'}' width='279px' height='279px'>
+                                    </div>
+                                    <div style="display: inline-block; margin: 5px;">
+                                        <img src='/file={os.getcwd() + '/HouseStyle/' + Style + '/' + Style +'3.png'}' width='279px' height='279px'>
+                                    </div>
+                                    <div style="display: inline-block; margin: 5px;">
+                                        <img src='/file={os.getcwd() + '/HouseStyle/' + Style + '/' + Style +'4.png'}' width='279px' height='279px'>
+                                    </div>
+                                    <div style="display: inline-block; margin: 5px;">
+                                        <img src='/file={os.getcwd() + '/HouseStyle/' + Style + '/' + Style +'5.png'}' width='279px' height='279px'>
+                                    </div>
+                                </div>
+                                """) 
 
 def generator(Prompt):
     pipe = DiffusionPipeline.from_pretrained("stabilityai/stable-diffusion-xl-base-1.0", torch_dtype=torch.float16, use_safetensors=True, variant="fp16")
@@ -315,7 +477,13 @@ def generateImage(dic, Prompt, style):
     fileName+=str(int(timestamp))
     os.system(f"mkdir {fileName}")
     frontview.save(f'{fileName}/House.png')
-    return frontview, fileName, json.dumps(room_dic)
+    return gr.HTML.update(f"""
+                    <div style="text-align: center;">
+                        <div style="display: inline-block;">
+                            <img src='/file={os.getcwd() + '/' + fileName + '/House.png'}' width='512px' height='512px'>
+                        </div>
+                    </div>
+                    """) , fileName, json.dumps(room_dic)
 
 
 def generate_audio(prompt, filename):
@@ -330,27 +498,60 @@ def generate_audio(prompt, filename):
 def generate_room_inside(cata, other, filename, PROMPT):
     room_dic = json.loads(PROMPT)
     if filename == '':
-        return None, None, None, None
+        return None
 
     imgList =  os.listdir(filename)
     result = generator("The panorama of the room of " + cata +  " which is "+ other + "in a house of " + room_dic['house'])
     if cata != 'bedroom':
         room_dic[cata] = "The panorama of the room of " + cata +  " which is "+ other + "in a house of " + room_dic['house']
         result.save(f'{filename}/{cata}.png')
-        return result, gr.Image.update(visible=False), gr.Image.update(visible=False), json.dumps(room_dic)
+        return gr.HTML.update(f"""
+                                <div style="text-align: center;">
+                                    <div style="display: inline-block;">
+                                        <img src='/file={os.getcwd() + '/' + filename + '/' + cata + '.png'}' width='512px' height='512px'>
+                                    </div>
+                                </div>
+                                """), json.dumps(room_dic)
     else:
         if 'bedroom1.png' not in imgList:
             room_dic[cata][0] = "The panorama of the room of " + cata +  " which is "+ other + "in a house of " + room_dic['house']
             result.save(f'{filename}/bedroom1.png')
-            return result, gr.Image.update(visible=True), gr.Image.update(visible=True), json.dumps(room_dic)
+            return gr.HTML.update(f"""
+                                <div style="text-align: center;">
+                                    <div style="display: inline-block;">
+                                        <img src='/file={os.getcwd() + '/' + filename + '/bedroom1.png'}' width='512px' height='512px'>
+                                    </div>
+                                </div>
+                                """), json.dumps(room_dic)
         elif 'bedroom2.png' not in imgList:
             room_dic[cata][1] = "The panorama of the room of " + cata +  " which is "+ other + "in a house of " + room_dic['house']
             result.save(f'{filename}/bedroom2.png')
-            return gr.Image.update(visible=True), result, gr.Image.update(visible=True), json.dumps(room_dic)
+            return gr.HTML.update(f"""
+                                <div style="text-align: center;">
+                                    <div style="display: inline-block; margin: 15px;">
+                                        <img src='/file={os.getcwd() + '/' + filename + '/bedroom1.png'}' width='512px' height='512px'>
+                                    </div>
+                                    <div style="display: inline-block; margin: 15px;">
+                                        <img src='/file={os.getcwd() + '/' + filename + '/bedroom2.png'}' width='512px' height='512px'>
+                                    </div>
+                                </div>
+                                """), json.dumps(room_dic)
         elif 'bedroom3.png' not in imgList:
             room_dic[cata][2] = "The panorama of the room of " + cata +  " which is "+ other + "in a house of " + room_dic['house']
             result.save(f'{filename}/bedroom3.png')
-            return gr.Image.update(visible=True), gr.Image.update(visible=True), result, json.dumps(room_dic)
+            return gr.HTML.update(f"""
+                                <div style="text-align: center;">
+                                    <div style="display: inline-block; margin: 10px;">
+                                        <img src='/file={os.getcwd() + '/' + filename + '/bedroom1.png'}' width='412px' height='412px'>
+                                    </div>
+                                    <div style="display: inline-block; margin: 10px;">
+                                        <img src='/file={os.getcwd() + '/' + filename + '/bedroom2.png'}' width='412px' height='412px'>
+                                    </div>
+                                    <div style="display: inline-block; margin: 10px;">
+                                        <img src='/file={os.getcwd() + '/' + filename + '/bedroom3.png'}' width='412px' height='412px'>
+                                    </div>
+                                </div>
+                                """), json.dumps(room_dic)
         else:
             room_dic[cata][0] = room_dic[cata][1]
             Image.open(f'{filename}/bedroom2.png').save(f'{filename}/bedroom1.png')
@@ -359,13 +560,25 @@ def generate_room_inside(cata, other, filename, PROMPT):
             room_dic[cata][2] = "The panorama of the room of " + cata +  " which is "+ other + "in a house of " + room_dic['house']
             result.save(f'{filename}/bedroom3.png')
     
-            return Image.open(f'{filename}/bedroom1.png'), Image.open(f'{filename}/bedroom2.png'), Image.open(f'{filename}/bedroom3.png'), json.dumps(room_dic)
+            return gr.HTML.update(f"""
+                                <div style="text-align: center;">
+                                    <div style="display: inline-block; margin: 10px;">
+                                        <img src='/file={os.getcwd() + '/' + filename + '/bedroom1.png'}' width='412px' height='412px'>
+                                    </div>
+                                    <div style="display: inline-block; margin: 10px;">
+                                        <img src='/file={os.getcwd() + '/' + filename + '/bedroom2.png'}' width='412px' height='412px'>
+                                    </div>
+                                    <div style="display: inline-block; margin: 10px;">
+                                        <img src='/file={os.getcwd() + '/' + filename + '/bedroom3.png'}' width='412px' height='412px'>
+                                    </div>
+                                </div>
+                                """), json.dumps(room_dic)
 
 
 
 
 css="""
-    #image_background {background-color: #000000}
+    #image_background {background-color: #FFFFFF}
     #button_close {position: relative; left:450px; font-size: 30px; color: black !important; max-width: 1px !important; max-height: 30px !important; min-width: 1px !important; min-height: 30px !important;}
 
     #poppage {
@@ -462,20 +675,33 @@ with gr.Blocks(css = css, title = "AI Home Designer") as demo:
             with gr.Column(elem_id = "image_background"):
                 gr.Markdown("""
                             <html>
-                            <p style="font-size: 15px; color: black;">&nbsp;&nbsp</p>
+                            <p style="font-size: 7px; color: black;">&nbsp;&nbsp</p>
                             </body>
                             </html>
                             """)
-                with gr.Row():
-                    
-                    img1    =  gr.Image(value = Image.open(os.getcwd() + '/HouseStyle/Asain/Asain1.png'), show_download_button = False, label = "Preview 1")
-                    img2    =  gr.Image(value = Image.open(os.getcwd() + '/HouseStyle/Asain/Asain2.png'), show_download_button = False, label = "Preview 2")
-                    img3    =  gr.Image(value = Image.open(os.getcwd() + '/HouseStyle/Asain/Asain3.png'), show_download_button = False, label = "Preview 3")
-                    img4    =  gr.Image(value = Image.open(os.getcwd() + '/HouseStyle/Asain/Asain4.png'), show_download_button = False, label = "Preview 4")
-                    img5    =  gr.Image(value = Image.open(os.getcwd() + '/HouseStyle/Asain/Asain5.png'), show_download_button = False, label = "Preview 5")
+                image_row = gr.HTML(f"""
+                                    <div style="text-align: center;">
+                                        <div style="display: inline-block; margin: 5px;">
+                                            <img src='/file={os.getcwd() + '/HouseStyle/Asain/Asain1.png'}' width='279px' height='279px'>
+                                        </div>
+                                        <div style="display: inline-block; margin: 5px;">
+                                            <img src='/file={os.getcwd() + '/HouseStyle/Asain/Asain2.png'}' width='279px' height='279px'>
+                                        </div>
+                                        <div style="display: inline-block; margin: 5px;">
+                                            <img src='/file={os.getcwd() + '/HouseStyle/Asain/Asain3.png'}' width='279px' height='279px'>
+                                        </div>
+                                        <div style="display: inline-block; margin: 5px;">
+                                            <img src='/file={os.getcwd() + '/HouseStyle/Asain/Asain4.png'}' width='279px' height='279px'>
+                                        </div>
+                                        <div style="display: inline-block; margin: 5px;">
+                                            <img src='/file={os.getcwd() + '/HouseStyle/Asain/Asain5.png'}' width='279px' height='279px'>
+                                        </div>
+                                    </div>
+                                    """) 
+
                 gr.Markdown("""
                             <html>
-                            <p style="font-size: 15px; color: black;">&nbsp;&nbsp</p>
+                            <p style="font-size: 7px; color: black;">&nbsp;&nbsp</p>
                             </body>
                             </html>
                             """)
@@ -490,13 +716,22 @@ with gr.Blocks(css = css, title = "AI Home Designer") as demo:
                     btn3 = gr.Button(value="Enhance Your Sentence?", elem_id = "button_enhance")
                     btn4 = gr.Button(value="Submit", elem_id = "button_submit")
                 # video_1 = gr.Video()
-            img    =  gr.Image(height = 512, width = 1536, show_download_button = False)
+            with gr.Column(variant = 'compact'):
+
+                Exterior_image = gr.HTML(f"""
+                                        <div style="text-align: center;">
+                                            <div style="display: inline-block;">
+                                                <img src='/file={os.getcwd() + '/Vector.png'}' width='300px' height='300px'>
+                                            </div>
+                                        </div>
+                                    """) 
+      
             #btn1.click(viewExample, inputs = [options], outputs = [img1, img2, img3, img4, img5])
             btn2.click(clear, inputs=[], outputs=[txt1])
             btn3.click(enhance_your_sentence, inputs = [options, txt, txt1], outputs = [txt1])
-            btn4.click(generateImage, inputs=[prompt, txt1, options], outputs=[img, fileName, prompt])
+            btn4.click(generateImage, inputs=[prompt, txt1, options], outputs=[Exterior_image, fileName, prompt])
             options.change(change_options, inputs = [options], outputs = [txt])
-            options.change(viewExample, inputs = [options], outputs = [img1, img2, img3, img4, img5])
+            options.change(viewExample, inputs = [options], outputs = [image_row])
             speech_audio.change(transcribe, inputs = [speech_audio], outputs = [txt1])
 
         with gr.TabItem("Interior") as tab2:
@@ -513,18 +748,24 @@ with gr.Blocks(css = css, title = "AI Home Designer") as demo:
                     btn3 = gr.Button(variant="primary", value="Submit", elem_id = "button_submit")
             
 
-            with gr.Row():
-                I_im_1 = gr.Image(height = 512, width = 1536, show_download_button = False)
-                I_im_2 = gr.Image(show_download_button = False, visible = False)
-                I_im_3 = gr.Image(show_download_button = False, visible = False)
+            with gr.Column(variant = 'compact'):
+    
+                Interior_image = gr.HTML(f"""
+                                        <div style="text-align: center;">
+                                            <div style="display: inline-block;">
+                                                <img src='/file={os.getcwd() + '/Vector.png'}' width='300px' height='300px'>
+                                            </div>
+                                        </div>
+                                        """) 
+
 
 
             I_audio.change(transcribe, inputs = [I_audio], outputs = [I_txt])
             btn1.click(clear, inputs=[], outputs=[I_txt])
             btn2.click(enhance_your_sentence2, inputs = [room_options, I_txt], outputs = [I_txt])
-            btn3.click(generate_room_inside, inputs=[room_options, I_txt, fileName, prompt], outputs=[I_im_1, I_im_2, I_im_3, prompt])
-            room_options.change(viewCurrentImage, inputs = [room_options, fileName], outputs = [I_im_1, I_im_2, I_im_3])
-            tab2.select(viewCurrentImage, inputs = [room_options, fileName], outputs = [I_im_1, I_im_2, I_im_3])
+            btn3.click(generate_room_inside, inputs=[room_options, I_txt, fileName, prompt], outputs=[Interior_image, prompt])
+            room_options.change(viewCurrentImage, inputs = [room_options, fileName], outputs = [Interior_image])
+            tab2.select(viewCurrentImage, inputs = [room_options, fileName], outputs = [Interior_image])
 
         with gr.TabItem("Audio") as tab3:
             gr.Markdown("""
@@ -539,10 +780,22 @@ with gr.Blocks(css = css, title = "AI Home Designer") as demo:
                 cb_living  = gr.Checkbox(label = "Chosen", value = 'True')
             
             with gr.Row():
-                img_house   = gr.Image(show_download_button = False)
-                img_dinning = gr.Image(show_download_button = False)
-                img_kitchen = gr.Image(show_download_button = False)
-                img_living   = gr.Image(show_download_button = False)
+                RowOne = gr.HTML(f"""
+                        <div style="text-align: center;">
+                            <div style="display: inline-block; margin: 32px;">
+                                <img src='/file={os.getcwd() + '/Vector.png'}' width='300px' height='300px'>
+                            </div>
+                            <div style="display: inline-block; margin: 32px;">
+                                <img src='/file={os.getcwd() + '/Vector.png'}' width='300px' height='300px'>
+                            </div>
+                            <div style="display: inline-block; margin: 32px;">
+                                <img src='/file={os.getcwd() + '/Vector.png'}' width='300px' height='300px'>
+                            </div>
+                            <div style="display: inline-block; margin: 32px;">
+                                <img src='/file={os.getcwd() + '/Vector.png'}' width='300px' height='300px'>
+                            </div>
+                        </div>
+                        """)
             
             with gr.Row():
                 
@@ -553,10 +806,22 @@ with gr.Blocks(css = css, title = "AI Home Designer") as demo:
             
             with gr.Row():
                 
-                img_bath     = gr.Image(show_download_button = False)
-                img_bedroom1 = gr.Image(show_download_button = False)
-                img_bedroom2 = gr.Image(show_download_button = False)
-                img_bedroom3 = gr.Image(show_download_button = False)
+                RowTwo = gr.HTML(f"""
+                        <div style="text-align: center;">
+                            <div style="display: inline-block; margin: 32px;">
+                                <img src='/file={os.getcwd() + '/Vector.png'}'width='300px' height='300px'>
+                            </div>
+                            <div style="display: inline-block; margin: 32px;">
+                                <img src='/file={os.getcwd() + '/Vector.png'}'width='300px' height='300px'>
+                            </div>
+                            <div style="display: inline-block; margin: 32px;">
+                                <img src='/file={os.getcwd() + '/Vector.png'}'width='300px' height='300px'>
+                            </div>
+                            <div style="display: inline-block; margin: 32px;">
+                                <img src='/file={os.getcwd() + '/Vector.png'}'width='300px' height='300px'>
+                            </div>
+                        </div>
+                        """)
                 
                         
             gr.Markdown("""
@@ -595,7 +860,7 @@ with gr.Blocks(css = css, title = "AI Home Designer") as demo:
             btn1.click(clear, inputs=[], outputs=[txt])
             btn2.click(enhance_your_sentence3, inputs = [txt], outputs = [txt])
             btn3.click(generate_audio, inputs=[txt, fileName], outputs=[audio])
-            tab3.select(viewAllimages, inputs = [fileName], outputs = [img_house, img_dinning, img_kitchen, img_living, img_bath, img_bedroom1, img_bedroom2, img_bedroom3])
+            tab3.select(viewAllimagesHTML, inputs = [fileName], outputs = [RowOne, RowTwo])
 
             
         
