@@ -503,12 +503,13 @@ def generate_room_inside(cata, other, filename, PROMPT):
     imgList =  os.listdir(filename)
     result = generator("The panorama of the room of " + cata +  " which is "+ other + "in a house of " + room_dic['house'])
     if cata != 'bedroom':
+        
         room_dic[cata] = "The panorama of the room of " + cata +  " which is "+ other + "in a house of " + room_dic['house']
         result.save(f'{filename}/{cata}.png')
         return gr.HTML.update(f"""
                                 <div style="text-align: center;">
                                     <div style="display: inline-block;">
-                                        <img src='/file={os.getcwd() + '/' + filename + '/' + cata + '.png'}' width='512px' height='512px'>
+                                        <img src='/file={os.getcwd() + '/' + filename + '/' + cata + '.png'}?{time.time()}' width='512px' height='512px'>
                                     </div>
                                 </div>
                                 """), json.dumps(room_dic)
@@ -563,13 +564,13 @@ def generate_room_inside(cata, other, filename, PROMPT):
             return gr.HTML.update(f"""
                                 <div style="text-align: center;">
                                     <div style="display: inline-block; margin: 10px;">
-                                        <img src='/file={os.getcwd() + '/' + filename + '/bedroom1.png'}' width='412px' height='412px'>
+                                        <img src='/file={os.getcwd() + '/' + filename + '/bedroom1.png'}?{time.time()}' width='412px' height='412px'>
                                     </div>
                                     <div style="display: inline-block; margin: 10px;">
-                                        <img src='/file={os.getcwd() + '/' + filename + '/bedroom2.png'}' width='412px' height='412px'>
+                                        <img src='/file={os.getcwd() + '/' + filename + '/bedroom2.png'}?{time.time()}' width='412px' height='412px'>
                                     </div>
                                     <div style="display: inline-block; margin: 10px;">
-                                        <img src='/file={os.getcwd() + '/' + filename + '/bedroom3.png'}' width='412px' height='412px'>
+                                        <img src='/file={os.getcwd() + '/' + filename + '/bedroom3.png'}?{time.time()}' width='412px' height='412px'>
                                     </div>
                                 </div>
                                 """), json.dumps(room_dic)

@@ -10,7 +10,7 @@ from PIL import Image
 import cv2
 import numpy as np
 
-effect_list = [AppearByPixels, X_Ray, swap_waterfall, zoom_swap, bur_bright_swap, open_door_swap, os.getcwd() + "/VideoEffects/snowVideo.mp4", os.getcwd() + "/VideoEffects/smokeVideo.mp4", os.getcwd() + "/VideoEffects/cloudVideo.mp4"]
+effect_list = [AppearByPixels, FadeIn, FadeOut, CrossDissolve, IrisIn, IrisOut, swap_waterfall, zoom_swap, os.getcwd() + "/VideoEffects/snowVideo.mp4", os.getcwd() + "/VideoEffects/smokeVideo.mp4", os.getcwd() + "/VideoEffects/cloudVideo.mp4"]
 
 def text2audio(prompt, filename):
     repo_id = "cvssp/audioldm2"

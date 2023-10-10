@@ -28,35 +28,70 @@ def randomReducePixel(image1, image2):
         copy_image[i[0], i[1]] = image2[i[0], i[1]]
     return copy_image
 
-def X_Ray(img1, img2, video):
+def FadeIn(img1, img2, video):
     height, width, _ = img1.shape
-    img1_edge = cv2.cvtColor(cv2.Canny(img1,100,200), cv2.COLOR_GRAY2BGR)
-    img2_edge = cv2.cvtColor(cv2.Canny(img2,100,200), cv2.COLOR_GRAY2BGR)
-    for i in range(height):
-        frame = up_down_swap(img1, img1_edge, i, True)
-        if i%32 == 0:
-            video.write(frame)
-    
-    for i in range(height):
-        frame = up_down_swap(img1_edge, img2_edge, i, False)
-        if i%32 == 0:
-            video.write(frame)
-    
-    for i in range(height):
-        frame = up_down_swap(img2_edge, img2, i, True)
-        if i%32 == 0:
-            video.write(frame)
+    canvas = np.zeros((height, width, 3), dtype="uint8")
+    for i in range(25):
+        video.write(img1)
+    for i in range(25):
+        video.write(canvas)
+    for i in range(100):
+        alpha = i / 100
+        blended = cv2.addWeighted(canvas, 1 - alpha, img2, alpha, 0)
+        video.write(np.uint8(blended))
     return video
 
-def up_down_swap(img1, img2, i, up):
-    copy_img = copy.deepcopy(img1)
+def FadeOut(img1, img2, video):
     height, width, _ = img1.shape
-    if up:
-        copy_img[0 : i, 0 : width] =  img2[0 : i, 0 : width]
-    else:
-        copy_img[height - 1 - i: height - 1, 0 : width] = img2[height - 1 - i: height - 1 , 0 : width]
-    return copy_img
+    canvas = np.zeros((height, width, 3), dtype="uint8")
+    for i in range(100):
+        alpha = i / 100
+        blended = cv2.addWeighted(img1, 1 - alpha, canvas, alpha, 0)
+        video.write(np.uint8(blended))
+    for i in range(25):
+        video.write(canvas)
+    for i in range(25):
+        video.write(img2)
+    return video
 
+def CrossDissolve(img1, img2, video):
+    for i in range(100):
+        alpha = i / 100
+        blended = cv2.addWeighted(img1, 1 - alpha, img2, alpha, 0)
+        video.write(np.uint8(blended))
+    for i in range(25):
+        video.write(img2)
+    return video
+
+def IrisIn(image1, image2, video):
+    height, width, _ = image1.shape
+    center = (height // 2, width // 2)
+    max_radius = np.sqrt(center[0]**2 + center[1]**2)
+
+    for frame in range(100):
+        mask = np.zeros((height, width), dtype=np.uint8)
+        cv2.ellipse(mask, center, (int(max_radius*(frame/100)), int(max_radius*(frame/100))), angle=0, startAngle=0, endAngle=360, color=(255), thickness=-1)
+        mask = cv2.cvtColor(mask, cv2.COLOR_GRAY2BGR)
+        mask = mask / 255
+        transition_image = np.multiply(image1, 1 - mask) + np.multiply(image2, mask)
+        video.write(np.uint8(transition_image))
+
+    return video
+
+def IrisOut(image1, image2, video):
+    height, width, _ = image1.shape
+    center = (height // 2, width // 2)
+    max_radius = np.sqrt(center[0]**2 + center[1]**2)
+
+    for frame in range(100):
+        mask = np.zeros((height, width), dtype=np.uint8)
+        cv2.ellipse(mask, center, (int(max_radius*((100-frame)/100)), int(max_radius*((100-frame)/100))), angle=0, startAngle=0, endAngle=360, color=(255), thickness=-1)
+        mask = cv2.cvtColor(mask, cv2.COLOR_GRAY2BGR)
+        mask = mask / 255
+        transition_image = np.multiply(image2, 1 - mask) + np.multiply(image1, mask)
+        video.write(np.uint8(transition_image))
+
+    return video
 
 def swap_waterfall(img1, img2, video):
     height, width, _ = img1.shape
@@ -163,64 +198,7 @@ def zoomIn(frame, i, big):
     zoomed_img = zoomed_img.crop((left, top, right, bottom))
     return cv2.cvtColor(np.array(zoomed_img), cv2.COLOR_RGB2BGR)
 
-def bur_bright_swap(img1, img2, video):
-    max_radius = 20  
-    for i in range(100):
-        bright_frame = control_bright(img1, 1 - (i/100))
-        frame = create_blur_frame(100 - i, max_radius, bright_frame)
-        video.write(frame)
 
-    for i in range(100):
-        bright_frame = control_bright(img2, 0.1 + (i/100))
-        frame = create_blur_frame(i, max_radius, bright_frame)
-        video.write(frame)
-    
-    return video
-    
-
-def control_bright(frame, i):
-    frame = Image.fromarray(cv2.cvtColor(frame, cv2.COLOR_BGR2RGB))
-    enhancer = ImageEnhance.Brightness(frame)
-
-    frame = enhancer.enhance(i)
-    frame = cv2.cvtColor(np.array(frame), cv2.COLOR_RGB2BGR)
-    
-    return frame
-
-def apply_blur(image, radius):
-    return cv2.GaussianBlur(image, (radius * 2 + 1, radius * 2 + 1), 0)
-
-def create_blur_frame(frame_number, max_radius, input_image):
-   
- 
-    radius = int(max_radius * abs(frame_number - 200 / 2) / (200 / 2))
-
-    blurred_image = apply_blur(input_image, radius)
-
-    return blurred_image
-
-def open_door_swap(img1, img2, video):
-    frame = img1
-    height, width, _ = frame.shape
-    for i in range(width//2):
-        frame = open_door(frame, img2, i)
-        
-        if i%2 == 0:
-            video.write(frame)
-    return video
-
-def open_door(frame, image, i):
-    height, width, _ = frame.shape
-
-    w_mid = width // 2
-
-    for x in range(height):
-        if w_mid - i > 0:
-            frame[x, w_mid - i] = image[x, w_mid - i]
-        if w_mid + i < width:
-            frame[x, w_mid + i] = image[x, w_mid + i]
-    
-    return frame
 
 def video_background(img1, img2, video, video_path):
     img_frame = video2room(img1, img2, video_path)
